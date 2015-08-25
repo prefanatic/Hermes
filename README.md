@@ -6,7 +6,7 @@ Usage
 -----
 
 In your Android Manifest:
-`
+
 ```xml
 <manifest ...>
     <application android:name="edu.uri.egr.hermes.HermesApplication" ...>
@@ -14,9 +14,7 @@ In your Android Manifest:
 </manifest>
 ```
 
-or
-
-In your Android application class:
+or, in your Android application class:
 ```java
 public class MyApplication extends Application {
     @Override
@@ -26,6 +24,7 @@ public class MyApplication extends Application {
     }
 }
 ```
+
 
 To access Hermes anywhere:
 ```java
