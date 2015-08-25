@@ -6,6 +6,7 @@ import com.google.android.gms.wearable.MessageEvent;
 
 import edu.uri.egr.hermes.Hermes;
 import edu.uri.egr.hermes.exceptions.HermesException;
+import edu.uri.egr.hermes.services.AbstractAudioRecordingService;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -33,18 +34,18 @@ import timber.log.Timber;
 
  */
 public class RxDispatchWrapper {
-    public static final int SUBJECT_DATA_CHANGED = 1;
-    public static final int SUBJECT_MESSAGE_RECEIVED = 2;
-    public static final int SUBJECT_PEER_CONNECTED = 3;
-    public static final int SUBJECT_PEER_DISCONNECTED = 4;
-    public static final int SUBJECT_NODES_CONNECTED = 5;
-    public static final int SUBJECT_CHANNEL_OPENED = 6;
-    public static final int SUBJECT_CHANNEL_CLOSED = 7;
-    public static final int SUBJECT_INPUT_CLOSED = 8;
-    public static final int SUBJECT_OUTPUT_CLOSED = 9;
+    public static final String SUBJECT_DATA_CHANGED = "data.changed";
+    public static final String SUBJECT_MESSAGE_RECEIVED = "message.received";
+    public static final String SUBJECT_PEER_CONNECTED = "peer.connected";
+    public static final String SUBJECT_PEER_DISCONNECTED = "peer.disconnected";
+    public static final String SUBJECT_NODES_CONNECTED = "nodes.connected";
+    public static final String SUBJECT_CHANNEL_OPENED = "channel.opened";
+    public static final String SUBJECT_CHANNEL_CLOSED = "channel.closed";
+    public static final String SUBJECT_INPUT_CLOSED = "input.closed";
+    public static final String SUBJECT_OUTPUT_CLOSED = "output.closed";
 
     private final Hermes hermes = Hermes.get();
-    private final SimpleArrayMap<Integer, Subject<?, ?>> subjectMap = new SimpleArrayMap();
+    private final SimpleArrayMap<String, Subject<?, ?>> subjectMap = new SimpleArrayMap();
 
     private static RxDispatchWrapper instance;
 
@@ -60,6 +61,7 @@ public class RxDispatchWrapper {
         createSubject(SUBJECT_CHANNEL_CLOSED);
         createSubject(SUBJECT_INPUT_CLOSED);
         createSubject(SUBJECT_OUTPUT_CLOSED);
+        createSubject(AbstractAudioRecordingService.SUBJECT_STATE); // ????
     }
 
     public static RxDispatchWrapper get() {
@@ -69,18 +71,18 @@ public class RxDispatchWrapper {
         return instance;
     }
 
-    public <T> Subject<T, T> createSubject(int key) {
-        return (Subject<T, T>) subjectMap.put(key, PublishSubject.create());
+    public <T> Subject<T, T> createSubject(String key) {
+        return (Subject<T, T>) subjectMap.put(key, new SerializedSubject(PublishSubject.create()));
     }
 
-    public <T> Subject<T, T> getSubject(int key) {
+    public <T> Subject<T, T> getSubject(String key) {
         if (!subjectMap.containsKey(key))
             return createSubject(key);
 
         return (Subject<T, T>) subjectMap.get(key);
     }
 
-    public <T> Observable<T> getObservable(int key) {
+    public <T> Observable<T> getObservable(String key) {
         if (!subjectMap.containsKey(key))
             throw new HermesException("No observable found under key " + key);
 

@@ -1,5 +1,8 @@
 package edu.uri.egr.hermes.services;
 
+import android.content.Intent;
+import android.os.Parcelable;
+
 import com.google.android.gms.wearable.CapabilityInfo;
 import com.google.android.gms.wearable.Channel;
 import com.google.android.gms.wearable.DataEventBuffer;
@@ -9,6 +12,7 @@ import com.google.android.gms.wearable.WearableListenerService;
 
 import java.util.List;
 
+import edu.uri.egr.hermes.Hermes;
 import edu.uri.egr.hermes.events.ChannelEvent;
 import edu.uri.egr.hermes.events.InputClosedEvent;
 import edu.uri.egr.hermes.events.OutputClosedEvent;
@@ -99,8 +103,19 @@ public class RxWearableDispatcherService extends WearableListenerService {
         dispatch(RxDispatchWrapper.SUBJECT_OUTPUT_CLOSED, new OutputClosedEvent(channel, closeReason, appSpecificErrorCode));
     }
 
-    private void dispatch(int subject, Object o) {
+    private void dispatch(String subject, Object o) {
         dispatchWrapper.getSubject(subject)
                 .onNext(o);
+
+        // Broadcast this as a dispatch event.
+        Intent intent = new Intent(Hermes.ACTION_WEARABLE_DISPATCH);
+        intent.putExtra(Hermes.EXTRA_SUBJECT, subject);
+
+        if (o instanceof Parcelable)
+            intent.putExtra(Hermes.EXTRA_OBJECT, ((Parcelable) o));
+
+        intent.setPackage(getPackageName());
+
+        startService(intent);
     }
 }

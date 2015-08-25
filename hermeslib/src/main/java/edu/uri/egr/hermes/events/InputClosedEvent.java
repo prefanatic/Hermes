@@ -1,5 +1,7 @@
 package edu.uri.egr.hermes.events;
 
+import android.os.Parcel;
+
 import com.google.android.gms.wearable.Channel;
 
 /**
@@ -27,4 +29,29 @@ public class InputClosedEvent extends WearableReasonEvent {
     public InputClosedEvent(Channel channel, int closeReason, int appSpecificErrorCode) {
         super(channel, closeReason, appSpecificErrorCode);
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+    }
+
+    protected InputClosedEvent(Parcel in) {
+        super(in);
+    }
+
+    public static final Creator<InputClosedEvent> CREATOR = new Creator<InputClosedEvent>() {
+        public InputClosedEvent createFromParcel(Parcel source) {
+            return new InputClosedEvent(source);
+        }
+
+        public InputClosedEvent[] newArray(int size) {
+            return new InputClosedEvent[size];
+        }
+    };
 }

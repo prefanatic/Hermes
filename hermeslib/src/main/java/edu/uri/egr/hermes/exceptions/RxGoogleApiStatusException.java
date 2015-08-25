@@ -23,6 +23,6 @@ public class RxGoogleApiStatusException extends RuntimeException {
     public Status status;
 
     public RxGoogleApiStatusException(Status status) {
-        super(status.getStatusMessage());
+        super(status.getStatusMessage() + " - " + status.getStatusCode());
     }
 }

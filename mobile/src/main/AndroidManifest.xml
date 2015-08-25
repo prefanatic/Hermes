@@ -12,10 +12,19 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_main" >
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".AudioReceiverService"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="hermes.intent.action.WEARABLE_DISPATCH"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

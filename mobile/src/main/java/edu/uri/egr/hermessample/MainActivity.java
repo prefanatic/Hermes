@@ -7,11 +7,18 @@ import android.view.MenuItem;
 
 import com.google.android.gms.wearable.MessageEvent;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 import edu.uri.egr.hermes.Hermes;
+import edu.uri.egr.hermes.events.ChannelEvent;
 import edu.uri.egr.hermes.wrappers.RxDispatchWrapper;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
@@ -21,20 +28,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // Grab Hermes.
-        Hermes hermes = Hermes.get();
-
-        // Test receiving messages!
-        Observable<MessageEvent> eventObservable = hermes.getWearableObservable(RxDispatchWrapper.SUBJECT_MESSAGE_RECEIVED);
-        eventObservable.observeOn(AndroidSchedulers.mainThread())
-                .subscribe(event -> Timber.d("Observable message from %s: %s", event.getSourceNodeId(), event.getPath()));
-
-        // Test Channels!
-        hermes.getWearableWrapper().getChannelOpened()
-                .subscribe(channelEvent -> {
-                    Timber.d("Channel opened: %s", channelEvent.channel.getNodeId());
-                });
     }
 
     @Override

@@ -8,6 +8,10 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import edu.uri.egr.hermes.exceptions.HermesException;
 import edu.uri.egr.hermes.exceptions.RxGoogleApiException;
 import edu.uri.egr.hermes.wrappers.RxDispatchWrapper;
@@ -37,6 +41,10 @@ import timber.log.Timber;
 
  */
 public class Hermes {
+    public static final String ACTION_WEARABLE_DISPATCH = "hermes.intent.action.WEARABLE_DISPATCH";
+    public static final String EXTRA_SUBJECT = "hermes.intent.extra.SUBJECT";
+    public static final String EXTRA_OBJECT = "hermes.intent.extra.OBJECT";
+
     private static Hermes mInstance;
 
     private Context context;
@@ -94,7 +102,7 @@ public class Hermes {
     /*
         -- Observer Request Methods
      */
-    public <T> Observable<T> getWearableObservable(int subject) {
+    public <T> Observable<T> getWearableObservable(String subject) {
         return mDispatchWrapper.getObservable(subject);
     }
 

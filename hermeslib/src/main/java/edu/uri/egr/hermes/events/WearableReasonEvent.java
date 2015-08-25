@@ -1,5 +1,8 @@
 package edu.uri.egr.hermes.events;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.android.gms.wearable.Channel;
 
 /**
@@ -19,7 +22,7 @@ import com.google.android.gms.wearable.Channel;
  * You should have received a copy of the GNU General Public License
  * along with Hermes.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class WearableReasonEvent {
+public class WearableReasonEvent implements Parcelable {
     public Channel channel;
     public int closeReason;
     public int appSpecificErrorCode;
@@ -33,4 +36,23 @@ public class WearableReasonEvent {
         this.closeReason = closeReason;
         this.appSpecificErrorCode = appSpecificErrorCode;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(this.channel, 0);
+        dest.writeInt(this.closeReason);
+        dest.writeInt(this.appSpecificErrorCode);
+    }
+
+    protected WearableReasonEvent(Parcel in) {
+        this.channel = in.readParcelable(Channel.class.getClassLoader());
+        this.closeReason = in.readInt();
+        this.appSpecificErrorCode = in.readInt();
+    }
+
 }

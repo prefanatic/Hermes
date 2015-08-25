@@ -1,14 +1,16 @@
-<manifest package="edu.uri.egr.hermes"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="edu.uri.egr.hermes" >
+
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
-        android:label="@string/app_name"
-        >
-
-        <service android:name=".services.RxWearableDispatcherService">
+        android:label="@string/app_name" >
+        <service android:name=".services.RxWearableDispatcherService" >
             <intent-filter>
-                <action android:name="com.google.android.gms.wearable.BIND_LISTENER"/>
+                <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
             </intent-filter>
         </service>
 
