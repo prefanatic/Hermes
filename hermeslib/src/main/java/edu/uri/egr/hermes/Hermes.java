@@ -1,14 +1,17 @@
 package edu.uri.egr.hermes;
 
 import android.content.Context;
+import android.os.Handler;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
 
 import edu.uri.egr.hermes.exceptions.HermesException;
 import edu.uri.egr.hermes.exceptions.RxGoogleApiException;
 import edu.uri.egr.hermes.wrappers.RxDispatchWrapper;
+import edu.uri.egr.hermes.wrappers.RxWearableWrapper;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.exceptions.OnErrorThrowable;
@@ -16,8 +19,22 @@ import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
- * Hermes
- *
+ This file is part of Hermes.
+ Developed by Cody Goldberg - 8/24/2015
+
+ Hermes is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Hermes is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Hermes.  If not, see <http://www.gnu.org/licenses/>.
+
  */
 public class Hermes {
     private static Hermes mInstance;
@@ -27,6 +44,7 @@ public class Hermes {
 
     // Children Classes
     private static RxDispatchWrapper mDispatchWrapper;
+    private static RxWearableWrapper mWearableWrapper;
 
     private Hermes(Context context) {
         this.context = context;
@@ -53,6 +71,7 @@ public class Hermes {
 
         mInstance = new Hermes(context);
         mDispatchWrapper = RxDispatchWrapper.get();
+        mWearableWrapper = new RxWearableWrapper(mInstance);
     }
 
     public static Hermes get() {
@@ -62,10 +81,25 @@ public class Hermes {
     }
 
     /*
+        -- Children Wrapper Get Methods
+     */
+    public RxDispatchWrapper getDispatchWrapper() {
+        return mDispatchWrapper;
+    }
+
+    public RxWearableWrapper getWearableWrapper() {
+        return mWearableWrapper;
+    }
+
+    /*
         -- Observer Request Methods
      */
     public <T> Observable<T> getWearableObservable(int subject) {
-        return mDispatchWrapper.getObserver(subject);
+        return mDispatchWrapper.getObservable(subject);
+    }
+
+    public Observable<Node> getWearableNodes() {
+        return mWearableWrapper.getNodes();
     }
 
     /*

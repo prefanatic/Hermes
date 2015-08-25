@@ -1,20 +1,21 @@
 package edu.uri.egr.hermessample;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.gms.wearable.MessageEvent;
 
 import edu.uri.egr.hermes.Hermes;
-import edu.uri.egr.hermes.services.RxWearableDispatcherService;
+import edu.uri.egr.hermes.wrappers.RxDispatchWrapper;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
+    private Subscription mSubscription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,15 +25,15 @@ public class MainActivity extends AppCompatActivity {
         // Grab Hermes.
         Hermes hermes = Hermes.get();
 
-        // Get our Message Observable.
-        Observable<MessageEvent> messageObservable =
-                hermes.getWearableObservable(RxWearableDispatcherService.SUBJECT_MESSAGE_RECEIVED);
+        // Test receiving messages!
+        Observable<MessageEvent> eventObservable = hermes.getWearableObservable(RxDispatchWrapper.SUBJECT_MESSAGE_RECEIVED);
+        eventObservable.observeOn(AndroidSchedulers.mainThread())
+                .subscribe(event -> Timber.d("Observable message from %s: %s", event.getSourceNodeId(), event.getPath()));
 
-        messageObservable
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(event -> {
-                    Timber.d("Received message (%s) from (%s)", event.getPath(), event.getSourceNodeId());
+        // Test Channels!
+        hermes.getWearableWrapper().getChannelOpened()
+                .subscribe(channelEvent -> {
+                    Timber.d("Channel opened: %s", channelEvent.channel.getNodeId());
                 });
     }
 
