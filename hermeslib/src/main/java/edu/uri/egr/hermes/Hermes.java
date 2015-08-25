@@ -30,6 +30,7 @@ import java.util.Map;
 
 import edu.uri.egr.hermes.exceptions.HermesException;
 import edu.uri.egr.hermes.exceptions.RxGoogleApiException;
+import edu.uri.egr.hermes.wrappers.FileWrapper;
 import edu.uri.egr.hermes.wrappers.RxDispatchWrapper;
 import edu.uri.egr.hermes.wrappers.RxWearableWrapper;
 import rx.Observable;
@@ -51,6 +52,7 @@ public class Hermes {
     // Children Classes
     private static RxDispatchWrapper mDispatchWrapper;
     private static RxWearableWrapper mWearableWrapper;
+    private static FileWrapper mFileWrapper;
 
     private Hermes(Context context) {
         this.context = context;
@@ -78,12 +80,17 @@ public class Hermes {
         mInstance = new Hermes(context);
         mDispatchWrapper = RxDispatchWrapper.get();
         mWearableWrapper = new RxWearableWrapper(mInstance);
+        mFileWrapper = new FileWrapper(mInstance);
     }
 
     public static Hermes get() {
         if (mInstance != null)
             return mInstance;
         throw new HermesException("Hermes has not been initialized yet.");
+    }
+
+    public Context getContext() {
+        return context;
     }
 
     /*
@@ -95,6 +102,10 @@ public class Hermes {
 
     public RxWearableWrapper getWearableWrapper() {
         return mWearableWrapper;
+    }
+
+    public FileWrapper getFileWrapper() {
+        return mFileWrapper;
     }
 
     /*
