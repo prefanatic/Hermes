@@ -82,7 +82,7 @@ public class RxDispatchWrapper {
 
     public <T> Observable<T> getObservable(String key) {
         if (!subjectMap.containsKey(key))
-            throw new HermesException("No observable found under key " + key);
+            createSubject(key);
 
         Observable<T> observable = (Observable<T>) subjectMap.get((key));
 
