@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Cody Goldberg
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package edu.uri.egr.hermessample;
 
 import android.app.IntentService;
@@ -6,13 +22,18 @@ import android.content.Intent;
 import com.google.android.gms.wearable.Channel;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import edu.uri.egr.hermes.Hermes;
 import edu.uri.egr.hermes.events.ChannelEvent;
+import edu.uri.egr.hermes.services.WaveProcessorService;
 import edu.uri.egr.hermes.wrappers.RxDispatchWrapper;
 import edu.uri.egr.hermes.wrappers.RxWearableWrapper;
+import rx.Observable;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -47,6 +68,9 @@ public class AudioReceiverService extends IntentService {
         // We have the InputStream!  Because we're on the IO thread, we can do all the work we want here.
         // Otherwise, we would halt the UI thread, and prevent users from doing anything on their phone.
 
+        // Create the temporary file used to store our audio.
+        File outputFile = Hermes.get().getFileWrapper().create("example-audio");
+
         // Buffer the InputStream.  This allows us to keep reading consistently, even when there may be some slowdowns on the device.
         BufferedInputStream inputStream = new BufferedInputStream(stream);
 
@@ -54,32 +78,36 @@ public class AudioReceiverService extends IntentService {
         byte[] buffer = new byte[1024]; // Buffer to hold the audio data.
         long startTime = System.currentTimeMillis(); // The UNIX EPOCH staring time of this method.
         long nextCheck = startTime + 1000; // Check to see how many bytes we received in 1 second.
-        int bytesReceived = 0;
-        int bytesPerSecond = 0;
+        int totalBytesReceived = 0; // Hold our bytes received.
+        int bytesPerSecond = 0; // Hold our bytes per second.
+        int i; // Create a variable to hold any loops we do.
 
         // Put the following in a try catch.
         // This will allow us to handle any errors given by inputStream.read gracefully.
         try {
 
+            // Create an OutputStream for our outputFile.
+            // We put this in the try catch statement to catch any FileNotFound exceptions.
+            BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
+
             // We want to repeat the following forever, until we get a -1 value.
             // The -1 signifies that there are no more bytes to be read, which means our wearable has stopped sending data.
             while ((bytesRead = inputStream.read(buffer)) != -1) {
-                // TODO: 8/25/2015 Audio saving example.
 
                 // For fun, lets calculate how many bytes per second we receive from the wearable.
                 // This value varies depending on distance between the two nodes.
                 // Add in how many bytes we read into the bytesReceived variable.
-                bytesReceived += bytesRead;
+                totalBytesReceived += bytesRead;
 
                 // If we've hit our one second check.
                 if (System.currentTimeMillis() > nextCheck) {
 
                     // Move in our bytesReceived into bytesPerSecond.
                     // Because we're checking every second, no additional math needs to occur.
-                    bytesPerSecond = bytesReceived;
+                    bytesPerSecond = totalBytesReceived;
 
                     // Clean bytesReceived
-                    bytesReceived = 0;
+                    totalBytesReceived = 0;
 
                     // Increment our nextCheck one second.
                     nextCheck = System.currentTimeMillis() + 1000;
@@ -88,7 +116,33 @@ public class AudioReceiverService extends IntentService {
                     Timber.d("Received %d kB/s", bytesPerSecond / 1024);
                 }
 
+                // Now that the fun is over, we should save our buffer to a temporary file.
+                // Normally, you would be able to call outputStream.write(buffer)
+                // However, because this data is coming from the network (the wearable), sometimes we'll receive less that what our buffer actually holds.
+                // To handle this, we loop through each byte we receive, and write that individually.
+                for (i = 0; i < bytesRead; i++)
+                    outputStream.write(buffer[i]);
+
             }
+
+            // We now are out of our while loop, meaning we've hit the end of available bytes from the InputStream.
+            // To gracefully end, we need to tell the InputStream and OutputStream to close.
+            inputStream.close();
+            outputStream.close();
+
+            // So now we have raw audio in a temporary file, it isn't very useful.
+            // Lets push this raw file over to WaveProcessorService to convert it to a Wave file.
+            // First, we need to create the output file.
+            File outputWaveFile = Hermes.get().getFileWrapper().createExternal("sample-processed.wav");
+
+            // Secondly, we get the Observable WaveProcessorService provides.  This will let us listen to it's results.
+            Observable<File> resultObservable = WaveProcessorService.getResultObservable();
+            resultObservable.subscribe(this::waveProcessed, this::waveProcessorError);
+
+            // Finally, tell WaveProcessorService that we're ready to process this file.
+            // We also have to tell it what sample rate we receive the audio at.  In this sample, it is 44100 kHz.
+            WaveProcessorService.process(this, outputFile, outputWaveFile, 44100);
+
         } catch (IOException e) {
             Timber.e("Error while reading audio data: %s", e.getMessage());
         }
@@ -98,6 +152,20 @@ public class AudioReceiverService extends IntentService {
         // This is called specifically when opening the input stream fails.
         // Could be caused by the wearable leaving range of the phone during the channel opening.
         Timber.e("Failed to open InputStream: %s", e.getMessage());
+    }
+
+    private void waveProcessed(File file) {
+        // Yay!  The file has been processed, and is located on the external storage.
+        // Lets make this file visible when you plug in to the computer.
+        // This step needs to occur, otherwise, you won't be able to see it.
+        Hermes.get().getFileWrapper().makeVisible(file);
+
+        Timber.d("Finished processing file: %s", file.getPath());
+    }
+
+    private void waveProcessorError(Throwable e) {
+        // This is called when the WaveProcessorService encounters an error while processing.
+        Timber.e("Failed to process WAVE: %s", e.getMessage());
     }
 
     @Override
