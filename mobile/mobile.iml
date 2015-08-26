@@ -97,6 +97,7 @@
     <orderEntry type="library" exported="" name="support-v4-23.0.0" level="project" />
     <orderEntry type="library" exported="" name="timber-3.0.1" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-23.0.0" level="project" />
+    <orderEntry type="library" exported="" name="commons-csv-1.2" level="project" />
     <orderEntry type="module" module-name="hermeslib" exported="" />
   </component>
 </module>

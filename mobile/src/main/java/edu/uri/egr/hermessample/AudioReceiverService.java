@@ -30,6 +30,7 @@ import java.io.InputStream;
 
 import edu.uri.egr.hermes.Hermes;
 import edu.uri.egr.hermes.events.ChannelEvent;
+import edu.uri.egr.hermes.manipulators.FileLog;
 import edu.uri.egr.hermes.services.WaveProcessorService;
 import edu.uri.egr.hermes.wrappers.RxDispatchWrapper;
 import edu.uri.egr.hermes.wrappers.RxWearableWrapper;
@@ -38,6 +39,12 @@ import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class AudioReceiverService extends IntentService {
+
+    // We want to hold our FileLog here.
+    // Because it is accessed between methods, we cant create it locally in one, and use it elsewhere.
+    // Variable creation is scoped - so if we put it "outside" everything, everything inside can see it.
+    // However, if we put it "inside" something, nothing outside can see it.
+    private FileLog log;
 
     public AudioReceiverService() {
         super("AudioReceiverService");
@@ -67,6 +74,18 @@ public class AudioReceiverService extends IntentService {
     private void handleInputStream(InputStream stream) {
         // We have the InputStream!  Because we're on the IO thread, we can do all the work we want here.
         // Otherwise, we would halt the UI thread, and prevent users from doing anything on their phone.
+
+        // Create a log file, where we can store some information.
+        log = new FileLog("example-log.csv");
+
+        // We need to set the log headers, so Hermes knows what we're talking about.
+        // If you decide to change the headers later, the log file is deleted and recreated.
+        log.setHeaders("Date", "Time Started", "Time Ended", "File Name", "File Size");
+
+        // You can log a specific column, or the whole line at a time.
+        // Right now, because we have start and end times, we only want to log specific columns now.
+        log.writeSpecific(0, log.date()); // In the date column, write the date.
+        log.writeSpecific(1, log.time()); // In the time column, write the time.
 
         // Create the temporary file used to store our audio.
         File outputFile = Hermes.get().getFileWrapper().create("example-audio");
@@ -130,6 +149,9 @@ public class AudioReceiverService extends IntentService {
             inputStream.close();
             outputStream.close();
 
+            // Log down the time that we stopped receiving audio.
+            log.writeSpecific(2, log.time());
+
             // So now we have raw audio in a temporary file, it isn't very useful.
             // Lets push this raw file over to WaveProcessorService to convert it to a Wave file.
             // First, we need to create the output file.
@@ -151,7 +173,8 @@ public class AudioReceiverService extends IntentService {
     private void handleError(Throwable e) {
         // This is called specifically when opening the input stream fails.
         // Could be caused by the wearable leaving range of the phone during the channel opening.
-        Timber.e("Failed to open InputStream: %s", e.getMessage());
+        Timber.e("Failed to open Inp" +
+                "utStream: %s", e.getMessage());
     }
 
     private void waveProcessed(File file) {
@@ -159,6 +182,18 @@ public class AudioReceiverService extends IntentService {
         // Lets make this file visible when you plug in to the computer.
         // This step needs to occur, otherwise, you won't be able to see it.
         Hermes.get().getFileWrapper().makeVisible(file);
+
+        // Log our final pieces of data.
+        log.writeSpecific(3, file.getName());
+        log.writeSpecific(4, file.length());
+
+        // Because we're using writeSpecific, Hermes will wait for us to manually "finish" the log file.
+        // We do that by running log.flush()
+        log.flush();
+
+        // If instead of writing specifics, we wanted to write it all at once, we can do the following:
+        // log.write("Column 1", "Column 2", "Column 3", ..., "Column 10");
+        // However, if you cannot write all your columns at once, Hermes will complain about it, and your next write will overwrite your previous line!
 
         Timber.d("Finished processing file: %s", file.getPath());
     }

@@ -7,12 +7,21 @@ import android.view.MenuItem;
 
 import com.google.android.gms.wearable.MessageEvent;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+
 import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 
 import edu.uri.egr.hermes.Hermes;
 import edu.uri.egr.hermes.events.ChannelEvent;
+import edu.uri.egr.hermes.manipulators.FileLog;
 import edu.uri.egr.hermes.wrappers.RxDispatchWrapper;
 import rx.Observable;
 import rx.Subscription;

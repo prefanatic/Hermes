@@ -76,8 +76,6 @@ public abstract class AbstractAudioRecordingService extends Service {
         // Create our state subject for people to listen in on.
         mStateSubject = Hermes.get().getDispatchWrapper().getSubject(SUBJECT_STATE);
 
-        Timber.d("Subject %s", mStateSubject);
-
         // Grab objects for wakelock management.
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         mWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "HermesAudioRecordingLock");
@@ -172,7 +170,6 @@ public abstract class AbstractAudioRecordingService extends Service {
 
         updateState(STATE_PROCESSING);
 
-        Timber.d("Releasing AudioRecord");
         mAudioRecord.stop();
         mAudioRecord.release();
         mAudioRecord = null;
