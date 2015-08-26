@@ -20,6 +20,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -76,7 +77,7 @@ public class FileLog {
     public void flush() {
         try {
             CSVPrinter printer = CSVFormat.EXCEL
-                    .print(new FileWriter(file, true));
+                    .print(new BufferedWriter(new FileWriter(file, true)));
 
             printer.printRecord(valuePool);
             printer.close();
@@ -146,7 +147,7 @@ public class FileLog {
         try {
             CSVFormat.EXCEL
                     .withHeader(headers)
-                    .print(new FileWriter(file))
+                    .print(new BufferedWriter(new FileWriter(file)))
                     .close();
         } catch (IOException e) {
             Timber.e("Failed to log: %s", e.getMessage());

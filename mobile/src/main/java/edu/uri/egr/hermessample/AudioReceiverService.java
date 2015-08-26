@@ -98,7 +98,7 @@ public class AudioReceiverService extends IntentService {
         long startTime = System.currentTimeMillis(); // The UNIX EPOCH staring time of this method.
         long nextCheck = startTime + 1000; // Check to see how many bytes we received in 1 second.
         int totalBytesReceived = 0; // Hold our bytes received.
-        int bytesPerSecond = 0; // Hold our bytes per second.
+        int bytesPerSecond; // Hold our bytes per second.
         int i; // Create a variable to hold any loops we do.
 
         // Put the following in a try catch.
@@ -173,8 +173,7 @@ public class AudioReceiverService extends IntentService {
     private void handleError(Throwable e) {
         // This is called specifically when opening the input stream fails.
         // Could be caused by the wearable leaving range of the phone during the channel opening.
-        Timber.e("Failed to open Inp" +
-                "utStream: %s", e.getMessage());
+        Timber.e("Failed to open InputStream: %s", e.getMessage());
     }
 
     private void waveProcessed(File file) {
