@@ -26,6 +26,7 @@ import edu.uri.egr.hermes.services.AbstractAudioRecordingService;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import rx.subjects.SerializedSubject;
 import rx.subjects.Subject;
@@ -59,7 +60,7 @@ public class RxDispatchWrapper {
         createSubject(SUBJECT_CHANNEL_CLOSED);
         createSubject(SUBJECT_INPUT_CLOSED);
         createSubject(SUBJECT_OUTPUT_CLOSED);
-        createSubject(AbstractAudioRecordingService.SUBJECT_STATE); // ????
+        createBehaviorSubject(AbstractAudioRecordingService.SUBJECT_STATE, AbstractAudioRecordingService.STATE_IDLE); // ????
     }
 
     public static RxDispatchWrapper get() {
@@ -71,6 +72,10 @@ public class RxDispatchWrapper {
 
     public <T> Subject<T, T> createSubject(String key) {
         return (Subject<T, T>) subjectMap.put(key, new SerializedSubject(PublishSubject.create()));
+    }
+
+    public <T> Subject<T, T> createBehaviorSubject(String key, T defaultValue) {
+        return (Subject<T, T>) subjectMap.put(key, new SerializedSubject<>(BehaviorSubject.create(defaultValue)));
     }
 
     public <T> Subject<T, T> getSubject(String key) {

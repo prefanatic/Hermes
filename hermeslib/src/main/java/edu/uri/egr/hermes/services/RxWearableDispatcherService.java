@@ -105,6 +105,7 @@ public class RxWearableDispatcherService extends WearableListenerService {
         dispatchWrapper.getSubject(subject)
                 .onNext(o);
 
+        // TODO: 8/26/2015 The below doesn't belong here.  Move to RxDispatchWrapper or a new IntentDispatchWrapper
         // Broadcast this as a dispatch event.
         Intent intent = new Intent(Hermes.ACTION_WEARABLE_DISPATCH);
         intent.putExtra(Hermes.EXTRA_SUBJECT, subject);
@@ -113,6 +114,7 @@ public class RxWearableDispatcherService extends WearableListenerService {
             intent.putExtra(Hermes.EXTRA_OBJECT, ((Parcelable) o));
 
         intent.setPackage(getPackageName());
+        intent.addCategory(subject);
 
         startService(intent);
     }
