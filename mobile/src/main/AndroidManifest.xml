@@ -23,6 +23,7 @@
             android:exported="true" >
             <intent-filter>
                 <action android:name="hermes.intent.action.WEARABLE_DISPATCH"/>
+                <category android:name="channel.opened"/>
             </intent-filter>
         </service>
     </application>

@@ -32,7 +32,6 @@ import edu.uri.egr.hermes.Hermes;
 import edu.uri.egr.hermes.events.ChannelEvent;
 import edu.uri.egr.hermes.manipulators.FileLog;
 import edu.uri.egr.hermes.services.WaveProcessorService;
-import edu.uri.egr.hermes.wrappers.RxDispatchWrapper;
 import edu.uri.egr.hermes.wrappers.RxWearableWrapper;
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -207,23 +206,16 @@ public class AudioReceiverService extends IntentService {
         // Check to see if we 'actually' get the intent.
         // This service is started through Android implicitly.  This should never be null.
         // However, if someone calls this improperly, it can be null, and can shut down everything.
+        // We also don't need to check to see if this intent is really for us, because that is done in the manifest.
         if (intent != null) {
 
-            // Does the intent contain the action we want to listen to?
-            if (intent.getAction().equals(Hermes.ACTION_WEARABLE_DISPATCH)) {
+            // Steal the channel in question.
+            ChannelEvent event = intent.getParcelableExtra(Hermes.EXTRA_OBJECT);
 
-                // Does the intent contain the dispatch type we want?
-                String subject = intent.getStringExtra(Hermes.EXTRA_SUBJECT);
-                if (subject != null && subject.equals(RxDispatchWrapper.SUBJECT_CHANNEL_OPENED)) {
+            // Android is calling us because there is a channel opened to our device.
+            // Follow into a cleaner method to do magic.
+            handleChannelOpened(event.channel);
 
-                    // Steal the channel in question.
-                    ChannelEvent event = intent.getParcelableExtra(Hermes.EXTRA_OBJECT); // TODO: 8/25/2015 Where can I put this string????
-
-                    // Android is calling us because there is a channel opened to our device.
-                    // Follow into a cleaner method to do magic.
-                    handleChannelOpened(event.channel);
-                }
-            }
         }
     }
 }

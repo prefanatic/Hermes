@@ -25,6 +25,14 @@
             android:enabled="true"
             android:exported="true" >
         </service>
+        <service
+            android:name=".DispatchHandoffService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="hermes.intent.action.WEARABLE_DISPATCH"/>
+                <category android:name="message.received"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
