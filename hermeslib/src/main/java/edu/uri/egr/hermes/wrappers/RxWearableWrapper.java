@@ -73,6 +73,14 @@ public class RxWearableWrapper {
         return sendMessage(nodeId, path, null);
     }
 
+    public Observable<Integer> sendMessage(String path) {
+        return getNodes()
+                .map(Node::getId)
+                .doOnNext(id -> Timber.d("Node: %s", id))
+                .flatMap(s -> sendMessage(s, path))
+                .subscribeOn(Schedulers.io());
+    }
+
     /*
         -- ChannelAPI Wrapper
      */
