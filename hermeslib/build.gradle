@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
+apply plugin: 'maven'
 apply plugin: 'com.android.library'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.neenbedankt.android-apt'
+
+group = 'com.github.prefanatic'
 
 android {
     compileSdkVersion 23
