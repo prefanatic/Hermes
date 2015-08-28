@@ -24,3 +24,33 @@ allprojects {
         maven { url 'https://clojars.org/repo/' }
     }
 }
+
+def gitCommitCount() {
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'rev-list', '--count', 'HEAD'
+            standardOutput = stdout
+        }
+        def commitCount = stdout.toString().trim().toInteger()
+        return commitCount
+    }
+    catch (ignored) {
+        return 0;
+    }
+}
+
+def gitRevision() {
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'rev-list', 'HEAD', '-n', '1'
+            standardOutput = stdout
+        }
+        def commitRevision = stdout.toString().trim()
+        return commitRevision
+    }
+    catch (ignored) {
+        return "(unknown revision)";
+    }
+}

@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-package edu.uri.egr.hermessample;
+package edu.uri.egr.hermes.receivers;
 
-import android.app.Application;
-import android.test.ApplicationTestCase;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 
-/**
- * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
- */
-public class ApplicationTest extends ApplicationTestCase<Application> {
-    public ApplicationTest() {
-        super(Application.class);
+import edu.uri.egr.hermes.wrappers.ScheduleWrapper;
+import rx.subjects.PublishSubject;
+
+public class AlarmDispatchReceiver extends BroadcastReceiver {
+    public AlarmDispatchReceiver() {
+    }
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        int alarmId = intent.getIntExtra(ScheduleWrapper.EXTRA_ALARM_ID, -1);
     }
 }

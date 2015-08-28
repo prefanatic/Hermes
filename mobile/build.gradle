@@ -9,7 +9,7 @@ android {
         applicationId 'edu.uri.egr.hermessample'
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 1
+        versionCode gitCommitCount()
         versionName "1.0"
     }
     buildTypes {
