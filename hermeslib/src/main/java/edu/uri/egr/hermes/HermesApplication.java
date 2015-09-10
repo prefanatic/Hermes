@@ -18,11 +18,16 @@ package edu.uri.egr.hermes;
 
 import android.app.Application;
 
+import com.google.android.gms.wearable.Wearable;
+
 public class HermesApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
 
-        Hermes.init(this);
+        Hermes.Config config = new Hermes.Config();
+        config.addApi(Wearable.API);
+
+        Hermes.init(this, config);
     }
 }

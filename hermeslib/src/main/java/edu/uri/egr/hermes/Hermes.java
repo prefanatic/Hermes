@@ -17,16 +17,16 @@
 package edu.uri.egr.hermes;
 
 import android.content.Context;
-import android.os.Handler;
+import android.os.Environment;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.Node;
-import com.google.android.gms.wearable.Wearable;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import edu.uri.egr.hermes.exceptions.HermesException;
 import edu.uri.egr.hermes.exceptions.RxGoogleApiException;
@@ -34,9 +34,14 @@ import edu.uri.egr.hermes.wrappers.FileWrapper;
 import edu.uri.egr.hermes.wrappers.RxDispatchWrapper;
 import edu.uri.egr.hermes.wrappers.RxWearableWrapper;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.exceptions.OnErrorThrowable;
 import rx.schedulers.Schedulers;
+import rx.subjects.BehaviorSubject;
+import rx.subjects.PublishSubject;
+import rx.subjects.SerializedSubject;
+import rx.subjects.Subject;
 import timber.log.Timber;
 
 public class Hermes {
@@ -47,37 +52,38 @@ public class Hermes {
     private static Hermes mInstance;
 
     private Context context;
+    private Config config;
     private volatile GoogleApiClient mGoogleApiClient;
+    private Subject<GoogleApiClient, GoogleApiClient> mGoogleSubject = new SerializedSubject<>(BehaviorSubject.create());
+    private File mRootFolder;
 
     // Children Classes
     private static RxDispatchWrapper mDispatchWrapper;
     private static RxWearableWrapper mWearableWrapper;
     private static FileWrapper mFileWrapper;
 
-    private Hermes(Context context) {
+    private Hermes(Context context, Config config) {
         this.context = context;
+        this.config = config;
 
         // Plant Timber regardless of being debug or not.
         Timber.plant(new Timber.DebugTree());
 
         // Connect to Google.
-        getGoogleClient()
-                .subscribe(client -> {
-                    // The client has connected!
-                }, e -> {
-                    // Something happened :(
-                    RxGoogleApiException exception = ((RxGoogleApiException) e);
-                    // TODO: What do we do here?
-                    // When an Activity/Service requests the client, they'll subscribe to this error.
-                    // They can just resolve it there.
-                });
+        createGoogleClient();
+
+        mRootFolder = config.baseFolder;
+        if (mRootFolder == null)
+            mRootFolder = Environment.getExternalStorageDirectory();
+
+        mRootFolder.mkdirs();
     }
 
-    public static void init(Context context) {
+    public static void init(Context context, Config config) {
         if (mInstance != null)
             throw new HermesException("There is already and instance of Hermes.");
 
-        mInstance = new Hermes(context);
+        mInstance = new Hermes(context, config);
         mDispatchWrapper = RxDispatchWrapper.get();
         mWearableWrapper = new RxWearableWrapper(mInstance);
         mFileWrapper = new FileWrapper(mInstance);
@@ -89,8 +95,16 @@ public class Hermes {
         throw new HermesException("Hermes has not been initialized yet.");
     }
 
+    public Config getConfig() {
+        return config;
+    }
+
     public Context getContext() {
         return context;
+    }
+
+    public File getRootFolder() {
+        return mRootFolder;
     }
 
     /*
@@ -131,17 +145,24 @@ public class Hermes {
         return mGoogleApiClient;
     }
 
-    public Observable<GoogleApiClient> getGoogleClient() {
-        return Observable.defer(() -> {
+    public Observable<GoogleApiClient> getGoogleClientObservable() {
+        return mGoogleSubject;
+    }
+
+    public void createGoogleClient() {
+        Observable.defer(() -> {
             long startTime = System.currentTimeMillis();
 
             if (context == null)
                 throw OnErrorThrowable.from(new HermesException("Hermes has not been initialized yet."));
 
             if (mGoogleApiClient == null) {
-                mGoogleApiClient = new GoogleApiClient.Builder(context)
-                        .addApi(Wearable.API)
-                        .build();
+                GoogleApiClient.Builder builder = new GoogleApiClient.Builder(context);
+                for (int i = 0; i < config.apis.size(); i++) {
+                    builder.addApi(config.apis.get(i));
+                }
+
+                mGoogleApiClient = builder.build();
             }
 
             if (mGoogleApiClient.isConnected())
@@ -155,8 +176,23 @@ public class Hermes {
 
             Timber.e("GoogleApiClient error: %d", result.getErrorCode());
             throw OnErrorThrowable.from(new RxGoogleApiException(result));
-
         }).subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread());
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(client -> mGoogleSubject.onNext(mGoogleApiClient), mGoogleSubject::onError);
+    }
+
+    public static final class Config {
+        public List<Api> apis = new ArrayList<>();
+        public File baseFolder;
+
+        public Config addApi(Api api) {
+            apis.add(api);
+            return this;
+        }
+
+        public Config setBaseFolder(File folder) {
+            baseFolder = folder;
+            return this;
+        }
     }
 }

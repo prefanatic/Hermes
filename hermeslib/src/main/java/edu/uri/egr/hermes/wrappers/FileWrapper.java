@@ -23,6 +23,7 @@ import android.os.Environment;
 import java.io.File;
 
 import edu.uri.egr.hermes.Hermes;
+import edu.uri.egr.hermes.exceptions.HermesException;
 import timber.log.Timber;
 
 public class FileWrapper {
@@ -33,16 +34,26 @@ public class FileWrapper {
     }
 
     /**
-     * Creates a file based on a specific path and name.
+     * Creates a file based on a specific path and name, inside the root folder.
      * @param name The name of the file.
      * @param path The location of the file.
      * @return File
      */
     public File create(String name, String path) {
-        File base = new File(path);
-        if (!base.mkdirs())
+        File base = new File(hermes.getRootFolder(), path);
+        if (base.mkdirs())
             Timber.d("Making directories to %s", path);
 
+        return new File(base, name);
+    }
+
+    /**
+     * Creates a file based on a specific name, and stores it in the configured base directory.
+     * @param name The name of the file.
+     * @return File
+     */
+    public File create(String name) {
+        File base = hermes.getRootFolder();
         return new File(base, name);
     }
 
@@ -51,7 +62,7 @@ public class FileWrapper {
      * @param name Name of the temp file.
      * @return File
      */
-    public File create(String name) {
+    public File createCache(String name) {
         return new File(hermes.getContext().getCacheDir(), name);
     }
 
@@ -63,7 +74,7 @@ public class FileWrapper {
      */
     public File createExternal(String name, String path) {
         File base = new File(Environment.getExternalStorageDirectory(), path);
-        if (!base.mkdirs())
+        if (base.mkdirs())
             Timber.d("Making directories to %s", path);
 
         return new File(base, name);

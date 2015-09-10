@@ -16,6 +16,10 @@
 
 package edu.uri.egr.hermes.manipulators;
 
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.BatteryManager;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
@@ -34,16 +38,26 @@ import edu.uri.egr.hermes.exceptions.HermesException;
 import timber.log.Timber;
 
 public class FileLog {
+    private static boolean enableAutoVisible = true;
+
     private File file;
     private String[] headers;
     private String[] valuePool;
 
     public FileLog(String name, String path) {
-        this.file = Hermes.get().getFileWrapper().createExternal(name, path);
+        this.file = Hermes.get().getFileWrapper().create(name, path);
+    }
+
+    public FileLog(String name, File file) {
+        this.file = new File(file, name);
     }
 
     public FileLog(String name) {
-        this(name, "");
+        this.file = Hermes.get().getFileWrapper().create(name);
+    }
+
+    public static void enableAutoVisible(boolean b) {
+        enableAutoVisible = b;
     }
 
     public void setHeaders(String... headers) {
@@ -82,7 +96,8 @@ public class FileLog {
             printer.printRecord(valuePool);
             printer.close();
 
-            Hermes.get().getFileWrapper().makeVisible(file);
+            if (enableAutoVisible)
+                Hermes.get().getFileWrapper().makeVisible(file);
         } catch (IOException e) {
             Timber.e("Failed to write log file: %s", e.getMessage());
         }
@@ -102,6 +117,13 @@ public class FileLog {
 
     public String date() {
         return new SimpleDateFormat("MM-dd", Locale.getDefault()).format(Calendar.getInstance().getTime());
+    }
+
+    public String battery() {
+        IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        Intent batteryStatus = Hermes.get().getContext().registerReceiver(null, filter);
+
+        return String.valueOf(batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1 / batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1) * 100));
     }
 
     private void generateFile() {

@@ -90,6 +90,7 @@ public class WaveProcessorService extends IntentService {
         super.onCreate();
 
         mResultSubject = Hermes.get().getDispatchWrapper().getSubject(SUBJECT_RESULT);
+        // TODO: 8/28/2015 Do we need a wakelock here??
     }
 
     @Override
@@ -134,7 +135,7 @@ public class WaveProcessorService extends IntentService {
                 outputStream.close();
 
                 mResultSubject.onNext(outputFile);
-                mResultSubject.onCompleted();
+                //mResultSubject.onCompleted();
 
             } catch (FileNotFoundException e) {
                 Timber.e("File not found: %s", e.getMessage());
