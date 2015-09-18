@@ -4,32 +4,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 
-import com.google.android.gms.wearable.MessageEvent;
-
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-
 import edu.uri.egr.hermes.Hermes;
-import edu.uri.egr.hermes.events.ChannelEvent;
-import edu.uri.egr.hermes.manipulators.FileLog;
-import edu.uri.egr.hermes.wrappers.RxDispatchWrapper;
-import rx.Observable;
+import edu.uri.egr.hermes.attributes.RBLGattAttributes;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
@@ -41,7 +20,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Button button = (Button) findViewById(R.id.button);
-        button.setOnClickListener(v -> Hermes.get().getWearableWrapper().sendMessage("example-audio").subscribe());
+        button.setOnClickListener(v -> Hermes.get().getBleWrapper().findDevices(5)
+                .doOnNext(device -> Timber.d(device.getName() + " -- " + device.getAddress()))
+                .filter(device -> device.getAddress().equals("72:3A:DA:81:3C:14"))
+                .doOnNext(device -> Hermes.get().getBleWrapper().connectAndListen(device, RBLGattAttributes.BLE_SHIELD_SERVICE, RBLGattAttributes.BLE_SHIELD_RX))
+                        //.flatMap(device -> Hermes.get().getBleWrapper().connectAndList(device))
+                .subscribe());
     }
 
     @Override

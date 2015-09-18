@@ -31,6 +31,7 @@ import java.util.List;
 import edu.uri.egr.hermes.exceptions.HermesException;
 import edu.uri.egr.hermes.exceptions.RxGoogleApiException;
 import edu.uri.egr.hermes.wrappers.FileWrapper;
+import edu.uri.egr.hermes.wrappers.RxBleWrapper;
 import edu.uri.egr.hermes.wrappers.RxDispatchWrapper;
 import edu.uri.egr.hermes.wrappers.RxWearableWrapper;
 import rx.Observable;
@@ -61,6 +62,7 @@ public class Hermes {
     private static RxDispatchWrapper mDispatchWrapper;
     private static RxWearableWrapper mWearableWrapper;
     private static FileWrapper mFileWrapper;
+    private static RxBleWrapper mBleWrapper;
 
     private Hermes(Context context, Config config) {
         this.context = context;
@@ -87,6 +89,7 @@ public class Hermes {
         mDispatchWrapper = RxDispatchWrapper.get();
         mWearableWrapper = new RxWearableWrapper(mInstance);
         mFileWrapper = new FileWrapper(mInstance);
+        mBleWrapper = new RxBleWrapper(mInstance);
     }
 
     public static Hermes get() {
@@ -120,6 +123,10 @@ public class Hermes {
 
     public FileWrapper getFileWrapper() {
         return mFileWrapper;
+    }
+
+    public RxBleWrapper getBleWrapper() {
+        return mBleWrapper;
     }
 
     /*

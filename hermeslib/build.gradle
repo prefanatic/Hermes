@@ -22,10 +22,22 @@ apply plugin: 'com.neenbedankt.android-apt'
 group = 'com.github.prefanatic'
 version = '1.0'
 
+def getSdkDir() {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+    return properties.getProperty('sdk.dir')
+}
+
 uploadArchives {
     repositories {
         mavenDeployer {
-            repository(url: "file://D:\\sdk\\extras\\android\\m2repository")
+            def sdkDir = getSdkDir()
+            def repoUrl = "$sdkDir/extras/android/m2repository"
+
+            println "Repo Location: " + repoUrl
+
+            repository(url: "file:///$repoUrl")
         }
     }
 }
