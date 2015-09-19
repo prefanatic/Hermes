@@ -44,6 +44,18 @@ public class ExternalStorage {
         return Environment.getExternalStorageDirectory().getPath() + "/";
     }
 
+    public static File getBestKnownExternalDirectory() {
+        Map<String, File> map = ExternalStorage.getAllStorageLocations();
+
+        File external = map.get(ExternalStorage.EXTERNAL_SD_CARD);
+        if (external == null)
+            external = map.get(ExternalStorage.SD_CARD);
+        if (external == null)
+            external = Environment.getExternalStorageDirectory();
+
+        return external;
+    }
+
     /**
      * @return True if the external storage is writable. False otherwise.
      */
