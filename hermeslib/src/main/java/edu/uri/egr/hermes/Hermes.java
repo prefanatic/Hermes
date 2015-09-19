@@ -156,8 +156,8 @@ public class Hermes {
         return mGoogleSubject;
     }
 
-    public void createGoogleClient() {
-        Observable.defer(() -> {
+    private void createGoogleClient() {
+        new Thread(() -> {
             long startTime = System.currentTimeMillis();
 
             if (context == null)
@@ -172,20 +172,21 @@ public class Hermes {
                 mGoogleApiClient = builder.build();
             }
 
-            if (mGoogleApiClient.isConnected())
-                return Observable.just(mGoogleApiClient);
+            if (mGoogleApiClient.isConnected()) {
+                mGoogleSubject.onNext(mGoogleApiClient);
+                return;
+            }
 
             ConnectionResult result = mGoogleApiClient.blockingConnect();
             if (result.isSuccess()) {
                 Timber.d("Connected to Google (%d ms).", System.currentTimeMillis() - startTime);
-                return Observable.just(mGoogleApiClient);
+                mGoogleSubject.onNext(mGoogleApiClient);
+                return;
             }
 
             Timber.e("GoogleApiClient error: %d", result.getErrorCode());
-            throw OnErrorThrowable.from(new RxGoogleApiException(result));
-        }).subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(client -> mGoogleSubject.onNext(mGoogleApiClient), mGoogleSubject::onError);
+            mGoogleSubject.onError(new RxGoogleApiException(result));
+        }).start();
     }
 
     public static final class Config {
