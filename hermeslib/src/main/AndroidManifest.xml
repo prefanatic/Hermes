@@ -26,7 +26,8 @@
     <application
         android:allowBackup="true"
         android:label="@string/app_name" >
-        <service android:name=".services.RxWearableDispatcherService" >
+        <service android:name=".services.RxWearableDispatcherService"
+            android:enabled="false">
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
             </intent-filter>
