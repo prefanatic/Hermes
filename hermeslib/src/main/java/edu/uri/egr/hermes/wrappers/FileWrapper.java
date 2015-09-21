@@ -18,13 +18,11 @@ package edu.uri.egr.hermes.wrappers;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Environment;
 
 import java.io.File;
 
-import edu.uri.egr.hermes.ExternalStorage;
+import edu.uri.egr.hermes.helpers.ExternalStorage;
 import edu.uri.egr.hermes.Hermes;
-import edu.uri.egr.hermes.exceptions.HermesException;
 import timber.log.Timber;
 
 public class FileWrapper {

@@ -31,6 +31,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.uri.egr.hermes.callbacks.HermesExceptionCallback;
 import edu.uri.egr.hermes.exceptions.HermesException;
 import edu.uri.egr.hermes.exceptions.RxGoogleApiException;
 import edu.uri.egr.hermes.services.RxWearableDispatcherService;
@@ -112,6 +113,11 @@ public class Hermes {
 
     public File getRootFolder() {
         return mRootFolder;
+    }
+
+    public void onException(Exception e) {
+        if (config.exceptionCallback != null)
+            config.exceptionCallback.onException(e);
     }
 
     /*
@@ -202,8 +208,14 @@ public class Hermes {
     }
 
     public static final class Config {
-        public List<Api> apis = new ArrayList<>();
-        public File baseFolder;
+        List<Api> apis = new ArrayList<>();
+        File baseFolder;
+        HermesExceptionCallback exceptionCallback;
+
+        public Config setExceptionCallback(HermesExceptionCallback callback) {
+            exceptionCallback = callback;
+            return this;
+        }
 
         public Config addApi(Api api) {
             apis.add(api);

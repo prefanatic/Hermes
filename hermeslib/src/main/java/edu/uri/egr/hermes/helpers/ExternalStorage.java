@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package edu.uri.egr.hermes;
+package edu.uri.egr.hermes.helpers;
 
 import android.os.Environment;
 
