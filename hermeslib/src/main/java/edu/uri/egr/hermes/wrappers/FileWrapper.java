@@ -22,6 +22,7 @@ import android.os.Environment;
 
 import java.io.File;
 
+import edu.uri.egr.hermes.ExternalStorage;
 import edu.uri.egr.hermes.Hermes;
 import edu.uri.egr.hermes.exceptions.HermesException;
 import timber.log.Timber;
@@ -73,7 +74,7 @@ public class FileWrapper {
      * @return File
      */
     public File createExternal(String name, String path) {
-        File base = new File(Environment.getExternalStorageDirectory(), path);
+        File base = new File(ExternalStorage.getBestKnownExternalDirectory(), path);
         if (base.mkdirs())
             Timber.d("Making directories to %s", path);
 
