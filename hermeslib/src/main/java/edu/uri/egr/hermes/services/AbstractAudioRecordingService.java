@@ -74,7 +74,7 @@ public abstract class AbstractAudioRecordingService extends Service {
 
     public final void onCreate() {
         // Create our state subject for people to listen in on.
-        mStateSubject = Hermes.get().getDispatchWrapper().getSubject(SUBJECT_STATE);
+        mStateSubject = Hermes.Dispatch.getSubject(SUBJECT_STATE);
 
         // Grab objects for wakelock management.
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
@@ -109,7 +109,7 @@ public abstract class AbstractAudioRecordingService extends Service {
     }
 
     public static Observable<Integer> getStateObservable() {
-        return Hermes.get().getDispatchWrapper().getObservable(SUBJECT_STATE);
+        return Hermes.Dispatch.getObservable(SUBJECT_STATE);
     }
 
     private void updateState(int state) {
