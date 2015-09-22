@@ -72,6 +72,8 @@ public class Hermes {
             mRootFolder = Environment.getExternalStorageDirectory();
 
         mRootFolder.mkdirs();
+
+        Timber.i("Hermes (%s) - Cody Goldberg [WBL]");
     }
 
     public static void init(Context context, Config config) {
