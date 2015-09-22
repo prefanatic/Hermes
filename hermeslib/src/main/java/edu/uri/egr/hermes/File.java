@@ -24,7 +24,7 @@ import edu.uri.egr.hermes.Hermes;
 import timber.log.Timber;
 
 public class File {
-    private static final Hermes hermes = Hermes.get();
+    private final Hermes hermes = Hermes.get();
 
     protected File() {
 

@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-package edu.uri.egr.hermes.wrappers;
+package edu.uri.egr.hermes;
 
 import android.support.v4.util.SimpleArrayMap;
 
-import com.google.android.gms.wearable.MessageEvent;
-
 import edu.uri.egr.hermes.Hermes;
-import edu.uri.egr.hermes.exceptions.HermesException;
 import edu.uri.egr.hermes.services.AbstractAudioRecordingService;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -30,26 +27,16 @@ import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import rx.subjects.SerializedSubject;
 import rx.subjects.Subject;
-import timber.log.Timber;
 
-public class RxDispatchWrapper {
+public class Dispatch {
 
     private final Hermes hermes = Hermes.get();
     private final SimpleArrayMap<String, Subject<?, ?>> subjectMap = new SimpleArrayMap();
 
-    private static RxDispatchWrapper instance;
-
-    private RxDispatchWrapper() {
+    protected Dispatch() {
         // Create subjects for all our dispatch events.
         // TODO: There must be a better way!
         createBehaviorSubject(AbstractAudioRecordingService.SUBJECT_STATE, AbstractAudioRecordingService.STATE_IDLE); // ????
-    }
-
-    public static RxDispatchWrapper get() {
-        if (instance == null)
-            instance = new RxDispatchWrapper();
-
-        return instance;
     }
 
     public <T> Subject<T, T> createSubject(String key) {

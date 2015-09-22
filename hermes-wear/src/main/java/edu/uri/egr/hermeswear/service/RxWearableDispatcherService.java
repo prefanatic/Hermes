@@ -32,13 +32,11 @@ import edu.uri.egr.hermes.Hermes;
 import edu.uri.egr.hermeswear.event.ChannelEvent;
 import edu.uri.egr.hermeswear.event.InputClosedEvent;
 import edu.uri.egr.hermeswear.event.OutputClosedEvent;
-import edu.uri.egr.hermes.wrappers.RxDispatchWrapper;
+import edu.uri.egr.hermes.Dispatch;
 import edu.uri.egr.hermeswear.HermesWearable;
 import timber.log.Timber;
 
 public class RxWearableDispatcherService extends WearableListenerService {
-    public RxDispatchWrapper dispatchWrapper = RxDispatchWrapper.get();
-
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
         Timber.d("Data events changed.");
@@ -99,7 +97,7 @@ public class RxWearableDispatcherService extends WearableListenerService {
     }
 
     private void dispatch(String subject, Object o) {
-        dispatchWrapper.getSubject(subject)
+        Hermes.Dispatch.getSubject(subject)
                 .onNext(o);
 
         // TODO: 8/26/2015 The below doesn't belong here.  Move to RxDispatchWrapper or a new IntentDispatchWrapper

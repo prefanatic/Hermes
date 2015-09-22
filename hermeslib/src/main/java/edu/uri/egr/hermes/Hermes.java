@@ -29,7 +29,6 @@ import java.util.List;
 import edu.uri.egr.hermes.exceptions.HermesException;
 import edu.uri.egr.hermes.exceptions.RxGoogleApiException;
 import edu.uri.egr.hermes.wrappers.RxBleWrapper;
-import edu.uri.egr.hermes.wrappers.RxDispatchWrapper;
 import rx.Observable;
 import rx.exceptions.OnErrorThrowable;
 import rx.subjects.BehaviorSubject;
@@ -52,8 +51,8 @@ public class Hermes {
 
     // Children Classes
     public static final File File = new File();
+    public static final Dispatch Dispatch = new Dispatch();
 
-    private static RxDispatchWrapper mDispatchWrapper;
     private static RxBleWrapper mBleWrapper;
 
     private Hermes(Context context, Config config) {
@@ -80,7 +79,6 @@ public class Hermes {
             throw new HermesException("There is already and instance of Hermes.");
 
         mInstance = new Hermes(context, config);
-        mDispatchWrapper = RxDispatchWrapper.get();
         mBleWrapper = new RxBleWrapper(mInstance);
     }
 
@@ -105,8 +103,9 @@ public class Hermes {
     /*
         -- Children Wrapper Get Methods
      */
-    public RxDispatchWrapper getDispatchWrapper() {
-        return mDispatchWrapper;
+    @Deprecated
+    public Dispatch getDispatchWrapper() {
+        return Dispatch;
     }
 
     @Deprecated
@@ -121,8 +120,9 @@ public class Hermes {
     /*
         -- Observer Request Methods
      */
+    @Deprecated
     public <T> Observable<T> getWearableObservable(String subject) {
-        return mDispatchWrapper.getObservable(subject);
+        return Dispatch.getObservable(subject);
     }
 
     /*
