@@ -23,13 +23,11 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import edu.uri.egr.hermes.exceptions.HermesException;
 import edu.uri.egr.hermes.exceptions.RxGoogleApiException;
-import edu.uri.egr.hermes.wrappers.FileWrapper;
 import edu.uri.egr.hermes.wrappers.RxBleWrapper;
 import edu.uri.egr.hermes.wrappers.RxDispatchWrapper;
 import rx.Observable;
@@ -50,11 +48,12 @@ public class Hermes {
     private Config config;
     private volatile GoogleApiClient mGoogleApiClient;
     private Subject<GoogleApiClient, GoogleApiClient> mGoogleSubject = new SerializedSubject<>(BehaviorSubject.create());
-    private File mRootFolder;
+    private java.io.File mRootFolder;
 
     // Children Classes
+    public static final File File = new File();
+
     private static RxDispatchWrapper mDispatchWrapper;
-    private static FileWrapper mFileWrapper;
     private static RxBleWrapper mBleWrapper;
 
     private Hermes(Context context, Config config) {
@@ -82,7 +81,6 @@ public class Hermes {
 
         mInstance = new Hermes(context, config);
         mDispatchWrapper = RxDispatchWrapper.get();
-        mFileWrapper = new FileWrapper(mInstance);
         mBleWrapper = new RxBleWrapper(mInstance);
     }
 
@@ -100,7 +98,7 @@ public class Hermes {
         return context;
     }
 
-    public File getRootFolder() {
+    public java.io.File getRootFolder() {
         return mRootFolder;
     }
 
@@ -111,8 +109,9 @@ public class Hermes {
         return mDispatchWrapper;
     }
 
-    public FileWrapper getFileWrapper() {
-        return mFileWrapper;
+    @Deprecated
+    public File getFileWrapper() {
+        return File;
     }
 
     public RxBleWrapper getBleWrapper() {
@@ -177,14 +176,14 @@ public class Hermes {
 
     public static final class Config {
         public List<Api> apis = new ArrayList<>();
-        public File baseFolder;
+        public java.io.File baseFolder;
 
         public Config addApi(Api api) {
             apis.add(api);
             return this;
         }
 
-        public Config setBaseFolder(File folder) {
+        public Config setBaseFolder(java.io.File folder) {
             baseFolder = folder;
             return this;
         }
