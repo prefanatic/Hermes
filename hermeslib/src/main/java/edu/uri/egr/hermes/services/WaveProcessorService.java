@@ -72,7 +72,7 @@ public class WaveProcessorService extends IntentService {
     }
 
     public static Observable<File> getResultObservable() {
-        return Hermes.get().getDispatchWrapper().getObservable(SUBJECT_RESULT);
+        return Hermes.Dispatch.getObservable(SUBJECT_RESULT);
     }
 
     private WaveHeader prepareHeader(short bitsPerSample, short encodingFormat, short channels, int sampleRate) {
@@ -89,7 +89,7 @@ public class WaveProcessorService extends IntentService {
     public void onCreate() {
         super.onCreate();
 
-        mResultSubject = Hermes.get().getDispatchWrapper().getSubject(SUBJECT_RESULT);
+        mResultSubject = Hermes.Dispatch.getSubject(SUBJECT_RESULT);
         // TODO: 8/28/2015 Do we need a wakelock here??
     }
 
