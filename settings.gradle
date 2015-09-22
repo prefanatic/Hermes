@@ -1,1 +1,1 @@
-include ':mobile', ':wear', ':hermeslib'
+include ':mobile', ':wear', ':hermeslib', ':hermes-ble', ':hermes-wear'

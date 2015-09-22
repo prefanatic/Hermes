@@ -29,10 +29,10 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import edu.uri.egr.hermes.Hermes;
-import edu.uri.egr.hermes.events.ChannelEvent;
 import edu.uri.egr.hermes.manipulators.FileLog;
 import edu.uri.egr.hermes.services.WaveProcessorService;
-import edu.uri.egr.hermes.wrappers.RxWearableWrapper;
+import edu.uri.egr.hermeswear.HermesWearable;
+import edu.uri.egr.hermeswear.event.ChannelEvent;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -52,9 +52,8 @@ public class AudioReceiverService extends IntentService {
     private void handleChannelOpened(Channel channel) {
         // Call out to RxWearableWrapper to pull out the InputStream from the channel.
         Hermes hermes = Hermes.get(); // Request a Hermes instance.
-        RxWearableWrapper wrapper = hermes.getWearableWrapper(); // Get Hermes' Rx WearableAPI wrapper.
 
-        wrapper.getInputStream(channel) // Get the InputStream Observable.
+        HermesWearable.Channel.getInputStream(channel) // Get the InputStream Observable.
                 .subscribeOn(Schedulers.io()) // Request that we perform the work of getting the InputStream on the IO thread.
                 .observeOn(Schedulers.io()) // And then keep it on the IO thread.
                 .subscribe(this::handleInputStream, this::handleError); // Pass off receiving the InputStream and Errors to different methods.

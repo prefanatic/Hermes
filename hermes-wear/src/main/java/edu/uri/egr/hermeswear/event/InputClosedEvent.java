@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package edu.uri.egr.hermes.events;
+package edu.uri.egr.hermeswear.event;
 
 import android.os.Parcel;
 
 import com.google.android.gms.wearable.Channel;
 
-public class OutputClosedEvent extends WearableReasonEvent {
-    public OutputClosedEvent(Channel channel) {
+public class InputClosedEvent extends WearableReasonEvent {
+    public InputClosedEvent(Channel channel) {
         super(channel);
     }
 
-    public OutputClosedEvent(Channel channel, int closeReason, int appSpecificErrorCode) {
+    public InputClosedEvent(Channel channel, int closeReason, int appSpecificErrorCode) {
         super(channel, closeReason, appSpecificErrorCode);
     }
 
@@ -40,17 +40,17 @@ public class OutputClosedEvent extends WearableReasonEvent {
         super.writeToParcel(dest, flags);
     }
 
-    protected OutputClosedEvent(Parcel in) {
+    protected InputClosedEvent(Parcel in) {
         super(in);
     }
 
-    public static final Creator<OutputClosedEvent> CREATOR = new Creator<OutputClosedEvent>() {
-        public OutputClosedEvent createFromParcel(Parcel source) {
-            return new OutputClosedEvent(source);
+    public static final Creator<InputClosedEvent> CREATOR = new Creator<InputClosedEvent>() {
+        public InputClosedEvent createFromParcel(Parcel source) {
+            return new InputClosedEvent(source);
         }
 
-        public OutputClosedEvent[] newArray(int size) {
-            return new OutputClosedEvent[size];
+        public InputClosedEvent[] newArray(int size) {
+            return new InputClosedEvent[size];
         }
     };
 }

@@ -13,43 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-apply plugin: 'maven'
 apply plugin: 'com.android.library'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.neenbedankt.android-apt'
-
-group = 'com.github.prefanatic'
-version = '1.0'
-
-def getSdkDir() {
-    Properties properties = new Properties()
-    properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
-    return properties.getProperty('sdk.dir')
-}
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            def sdkDir = getSdkDir()
-            def repoUrl = "$sdkDir/extras/android/m2repository"
-
-            println "Repo Location: " + repoUrl
-
-            repository(url: "file:///$repoUrl")
-        }
-    }
-}
+apply plugin: 'com.github.dcendents.android-maven'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '23.0.0'
+    buildToolsVersion = project.toolsVersion
 
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode gitCommitCount()
+        versionCode = gitCommitCount()
         versionName "1.0"
     }
     buildTypes {
@@ -58,19 +34,26 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
     lintOptions {
         abortOnError false
+    }
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
     }
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.google.android.gms:play-services:7.8.0'
+
+    // Google Play Services Base
+    compile "com.google.android.gms:play-services-base:$project.googlePlay"
+
+    // Logging
     compile 'com.jakewharton.timber:timber:3.0.1'
-    compile 'io.reactivex:rxandroid:1.0.1'
     compile 'org.apache.commons:commons-csv:1.2'
+
+    // ReactiveX
+    compile 'io.reactivex:rxandroid:1.0.1'
+    compile 'io.reactivex:rxjava:1.0.14'
 }

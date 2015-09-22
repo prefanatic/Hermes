@@ -14,85 +14,89 @@
  * limitations under the License.
  */
 
-package edu.uri.egr.hermes.wrappers;
+package edu.uri.egr.hermes;
 
 import android.content.Intent;
 import android.net.Uri;
 
-import java.io.File;
-
-import edu.uri.egr.hermes.helpers.ExternalStorage;
+import edu.uri.egr.hermes.ExternalStorage;
 import edu.uri.egr.hermes.Hermes;
 import timber.log.Timber;
 
-public class FileWrapper {
-    private final Hermes hermes;
+public class File {
+    private final Hermes hermes = Hermes.get();
 
-    public FileWrapper(Hermes hermes) {
-        this.hermes = hermes;
+    protected File() {
+
     }
 
     /**
      * Creates a file based on a specific path and name, inside the root folder.
+     *
      * @param name The name of the file.
      * @param path The location of the file.
      * @return File
      */
-    public File create(String name, String path) {
-        File base = new File(hermes.getRootFolder(), path);
+    public java.io.File create(String name, String path) {
+        java.io.File base = new java.io.File(hermes.getRootFolder(), path);
         if (base.mkdirs())
             Timber.d("Making directories to %s", path);
 
-        return new File(base, name);
+        return new java.io.File(base, name);
     }
 
     /**
      * Creates a file based on a specific name, and stores it in the configured base directory.
+     *
      * @param name The name of the file.
      * @return File
      */
-    public File create(String name) {
-        File base = hermes.getRootFolder();
-        return new File(base, name);
+    public java.io.File create(String name) {
+        java.io.File base = hermes.getRootFolder();
+        return new java.io.File(base, name);
     }
 
     /**
      * Creates a temporary file on the internal storage.
+     *
      * @param name Name of the temp file.
      * @return File
      */
-    public File createCache(String name) {
-        return new File(hermes.getContext().getCacheDir(), name);
+    public java.io.File createCache(String name) {
+        return new java.io.File(hermes.getContext().getCacheDir(), name);
     }
 
     /**
      * Creates a file on the external storage device, using the specified path and name.
+     *
      * @param name The name of the file.
      * @param path The location of the file, on the external storage device.
      * @return File
      */
-    public File createExternal(String name, String path) {
-        File base = new File(ExternalStorage.getBestKnownExternalDirectory(), path);
+    public java.io.File createExternal(String name, String path) {
+        java.io.File base = new java.io.File(ExternalStorage.getBestKnownExternalDirectory(), path);
         if (base.mkdirs())
             Timber.d("Making directories to %s", path);
 
-        return new File(base, name);
+        return new java.io.File(base, name);
     }
 
     /**
      * Creates a file on the external storage device, using a specified name.
+     *
      * @param name The name of the file.
      * @return File
      */
-    public File createExternal(String name) {
+    public java.io.File createExternal(String name) {
         return createExternal(name, "");
     }
 
     /**
      * Makes the file visible to MTP - so you can see it when you connect to your computer.
+     *
      * @param file The file.
      */
-    public void makeVisible(File file) {
+    public void makeVisible(java.io.File file) {
         Intent mediaScanner = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         mediaScanner.setData(Uri.fromFile(file));
         hermes.getContext().sendBroadcast(mediaScanner);

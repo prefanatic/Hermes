@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package edu.uri.egr.hermes.events;
+package edu.uri.egr.hermeswear.event;
 
 import android.os.Parcel;
 import android.os.Parcelable;

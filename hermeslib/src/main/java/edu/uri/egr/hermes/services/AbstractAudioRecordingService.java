@@ -31,7 +31,6 @@ import android.support.annotation.Nullable;
 import java.io.IOException;
 
 import edu.uri.egr.hermes.Hermes;
-import edu.uri.egr.hermes.exceptions.HermesException;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.SerializedSubject;
@@ -48,7 +47,6 @@ public abstract class AbstractAudioRecordingService extends Service {
     public static final int STATE_PROCESSING = 2;
     private int STATE = 0;
 
-    private Hermes hermes = Hermes.get();
     private Subject<Integer, Integer> mStateSubject;
     private PowerManager.WakeLock mWakeLock;
     private volatile AudioRecord mAudioRecord;
@@ -76,7 +74,7 @@ public abstract class AbstractAudioRecordingService extends Service {
 
     public final void onCreate() {
         // Create our state subject for people to listen in on.
-        mStateSubject = hermes.getDispatchWrapper().getSubject(SUBJECT_STATE);
+        mStateSubject = Hermes.Dispatch.getSubject(SUBJECT_STATE);
 
         // Grab objects for wakelock management.
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
@@ -111,7 +109,7 @@ public abstract class AbstractAudioRecordingService extends Service {
     }
 
     public static Observable<Integer> getStateObservable() {
-        return Hermes.get().getDispatchWrapper().getObservable(SUBJECT_STATE);
+        return Hermes.Dispatch.getObservable(SUBJECT_STATE);
     }
 
     private void updateState(int state) {
@@ -157,7 +155,7 @@ public abstract class AbstractAudioRecordingService extends Service {
             bytesRead = mAudioRecord.read(buffer, 0, bufferSize);
             if (bytesRead == AudioRecord.ERROR) {
                 Timber.e("Error while recording: %s", bytesRead);
-                hermes.onException(new HermesException("Unknown error while recording audio.  Failure code: " + bytesRead));
+                // TODO: 8/24/2015 Handle this - we can either restart recording or send off to our children class.
                 break;
             }
 
@@ -165,7 +163,7 @@ public abstract class AbstractAudioRecordingService extends Service {
                 onAudioBufferReceived(buffer);
             } catch (IOException e) {
                 Timber.e("IOException pushing onAudioBufferReceived: %s", e.getMessage());
-                hermes.onException(e);
+                // TODO: 8/25/2015 Handle this - as above, should we or the child?
                 break;
             }
         }
@@ -190,7 +188,7 @@ public abstract class AbstractAudioRecordingService extends Service {
             onRecordingEnd();
         } catch (IOException e) {
             Timber.e("IOException pushing onRecordingEnd: %s", e.getMessage());
-            hermes.onException(e);
+            // TODO: 8/25/2015 Handle this - as above, should we or the child?
         }
 
         if (mWakeLock.isHeld())
