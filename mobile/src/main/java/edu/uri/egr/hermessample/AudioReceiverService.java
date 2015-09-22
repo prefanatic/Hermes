@@ -86,7 +86,7 @@ public class AudioReceiverService extends IntentService {
         log.writeSpecific(1, log.time()); // In the time column, write the time.
 
         // Create the temporary file used to store our audio.
-        File outputFile = Hermes.get().getFileWrapper().create("example-audio");
+        File outputFile = Hermes.File.create("example-audio");
 
         // Buffer the InputStream.  This allows us to keep reading consistently, even when there may be some slowdowns on the device.
         BufferedInputStream inputStream = new BufferedInputStream(stream);
@@ -153,7 +153,7 @@ public class AudioReceiverService extends IntentService {
             // So now we have raw audio in a temporary file, it isn't very useful.
             // Lets push this raw file over to WaveProcessorService to convert it to a Wave file.
             // First, we need to create the output file.
-            File outputWaveFile = Hermes.get().getFileWrapper().createExternal("sample-processed.wav");
+            File outputWaveFile = Hermes.File.createExternal("sample-processed.wav");
 
             // Secondly, we get the Observable WaveProcessorService provides.  This will let us listen to it's results.
             Observable<File> resultObservable = WaveProcessorService.getResultObservable();
@@ -178,7 +178,7 @@ public class AudioReceiverService extends IntentService {
         // Yay!  The file has been processed, and is located on the external storage.
         // Lets make this file visible when you plug in to the computer.
         // This step needs to occur, otherwise, you won't be able to see it.
-        Hermes.get().getFileWrapper().makeVisible(file);
+        Hermes.File.makeVisible(file);
 
         // Log our final pieces of data.
         log.writeSpecific(3, file.getName());

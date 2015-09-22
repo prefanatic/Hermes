@@ -97,7 +97,7 @@ public class FileLog {
             printer.close();
 
             if (enableAutoVisible)
-                Hermes.get().getFileWrapper().makeVisible(file);
+                Hermes.File.makeVisible(file);
         } catch (IOException e) {
             Timber.e("Failed to write log file: %s", e.getMessage());
         }

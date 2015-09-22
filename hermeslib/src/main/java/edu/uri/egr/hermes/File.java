@@ -19,8 +19,7 @@ package edu.uri.egr.hermes;
 import android.content.Intent;
 import android.net.Uri;
 
-import edu.uri.egr.hermes.ExternalStorage;
-import edu.uri.egr.hermes.Hermes;
+import edu.uri.egr.hermes.helpers.ExternalStorage;
 import timber.log.Timber;
 
 public class File {

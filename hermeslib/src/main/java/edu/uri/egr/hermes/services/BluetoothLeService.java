@@ -50,11 +50,11 @@ public class BluetoothLeService extends Service {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             Timber.d("Connection state changed - from %d to %d", status, newState);
-            hermes.getDispatchWrapper().getSubject(SUBJECT_CONNECTION)
+            hermes.Dispatch.getSubject(SUBJECT_CONNECTION)
                     .onNext(new BleConnectionEvent(newState, gatt));
 
             if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                hermes.getDispatchWrapper().getSubject(SUBJECT_CONNECTION)
+                hermes.Dispatch.getSubject(SUBJECT_CONNECTION)
                         .onCompleted();
                 stopSelf();
             }
@@ -62,7 +62,7 @@ public class BluetoothLeService extends Service {
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
-            Subject<BleServiceEvent, BleServiceEvent> subject = hermes.getDispatchWrapper().getSubject(SUBJECT_SERVICES);
+            Subject<BleServiceEvent, BleServiceEvent> subject = hermes.Dispatch.getSubject(SUBJECT_SERVICES);
             for (BluetoothGattService service : gatt.getServices())
                 subject.onNext(new BleServiceEvent(gatt, service));
             subject.onCompleted();
@@ -72,7 +72,7 @@ public class BluetoothLeService extends Service {
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic
                 characteristic, int status) {
             Timber.d("Characteristic read: %s - %d", characteristic.getUuid().toString(), status);
-            hermes.getDispatchWrapper().getSubject(SUBJECT_CHARACTERISTIC)
+            hermes.Dispatch.getSubject(SUBJECT_CHARACTERISTIC)
                     .onNext(new BleCharacteristicEvent(gatt, characteristic, BleCharacteristicEvent.READ));
         }
 
@@ -80,7 +80,7 @@ public class BluetoothLeService extends Service {
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic
                 characteristic, int status) {
             Timber.d("Characteristic wrote: %s - %d", characteristic.getUuid().toString(), status);
-            hermes.getDispatchWrapper().getSubject(SUBJECT_CHARACTERISTIC)
+            hermes.Dispatch.getSubject(SUBJECT_CHARACTERISTIC)
                     .onNext(new BleCharacteristicEvent(gatt, characteristic, BleCharacteristicEvent.WRITE));
         }
 
@@ -88,7 +88,7 @@ public class BluetoothLeService extends Service {
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic
                 characteristic) {
             Timber.d("Characteristic changed: %s", characteristic.getUuid().toString());
-            hermes.getDispatchWrapper().getSubject(SUBJECT_CHARACTERISTIC)
+            hermes.Dispatch.getSubject(SUBJECT_CHARACTERISTIC)
                     .onNext(new BleCharacteristicEvent(gatt, characteristic, BleCharacteristicEvent.CHANGED));
         }
 
@@ -96,7 +96,7 @@ public class BluetoothLeService extends Service {
         public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor,
                                      int status) {
             Timber.d("Descriptor read: %s - %d", descriptor.getUuid(), status);
-            hermes.getDispatchWrapper().getSubject(SUBJECT_DESCRIPTOR)
+            hermes.Dispatch.getSubject(SUBJECT_DESCRIPTOR)
                     .onNext(new BleDescriptorEvent(gatt, descriptor, BleDescriptorEvent.READ));
         }
 
@@ -104,7 +104,7 @@ public class BluetoothLeService extends Service {
         public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor,
                                       int status) {
             Timber.d("Descriptor wrote: %s - %d", descriptor.getUuid(), status);
-            hermes.getDispatchWrapper().getSubject(SUBJECT_DESCRIPTOR)
+            hermes.Dispatch.getSubject(SUBJECT_DESCRIPTOR)
                     .onNext(new BleDescriptorEvent(gatt, descriptor, BleDescriptorEvent.WRITE));
         }
 
@@ -125,14 +125,14 @@ public class BluetoothLeService extends Service {
     };
 
     public static Observable<BleConnectionEvent> connect(Context context, BluetoothDevice device) {
-        hermes.getDispatchWrapper().createSubject(SUBJECT_CONNECTION);
+        hermes.Dispatch.createSubject(SUBJECT_CONNECTION);
 
         Intent intent = new Intent(context, BluetoothLeService.class);
         intent.putExtra(EXTRA_DEVICE, device);
 
         context.startService(intent);
 
-        return hermes.getDispatchWrapper().getObservable(SUBJECT_CONNECTION);
+        return hermes.Dispatch.getObservable(SUBJECT_CONNECTION);
     }
 
     public BluetoothLeService() {

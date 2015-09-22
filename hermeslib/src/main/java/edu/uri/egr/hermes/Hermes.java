@@ -41,7 +41,7 @@ public class Hermes {
     public static final String EXTRA_SUBJECT = "hermes.intent.extra.SUBJECT";
     public static final String EXTRA_OBJECT = "hermes.intent.extra.OBJECT";
 
-    private static Hermes mInstance;
+    private volatile static Hermes mInstance;
 
     private Context context;
     private Config config;
