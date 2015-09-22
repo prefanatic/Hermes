@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package edu.uri.egr.hermes.services;
+package edu.uri.egr.hermeswear.service;
 
 import android.content.Intent;
 import android.os.Parcelable;
@@ -29,14 +29,11 @@ import com.google.android.gms.wearable.WearableListenerService;
 import java.util.List;
 
 import edu.uri.egr.hermes.Hermes;
-import edu.uri.egr.hermes.events.ChannelEvent;
-import edu.uri.egr.hermes.events.InputClosedEvent;
-import edu.uri.egr.hermes.events.OutputClosedEvent;
+import edu.uri.egr.hermeswear.event.ChannelEvent;
+import edu.uri.egr.hermeswear.event.InputClosedEvent;
+import edu.uri.egr.hermeswear.event.OutputClosedEvent;
 import edu.uri.egr.hermes.wrappers.RxDispatchWrapper;
-import edu.uri.egr.hermes.wrappers.RxWearableWrapper;
-import rx.Observable;
-import rx.functions.Func1;
-import rx.subjects.PublishSubject;
+import edu.uri.egr.hermeswear.HermesWearable;
 import timber.log.Timber;
 
 public class RxWearableDispatcherService extends WearableListenerService {
@@ -45,25 +42,25 @@ public class RxWearableDispatcherService extends WearableListenerService {
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
         Timber.d("Data events changed.");
-        dispatch(RxDispatchWrapper.SUBJECT_DATA_CHANGED, dataEvents);
+        dispatch(HermesWearable.SUBJECT_DATA_CHANGED, dataEvents);
     }
 
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
         Timber.d("Message received from %s: %s (%s)", messageEvent.getSourceNodeId(), messageEvent.getPath(), Thread.currentThread().getName());
-        dispatch(RxDispatchWrapper.SUBJECT_MESSAGE_RECEIVED, messageEvent);
+        dispatch(HermesWearable.SUBJECT_MESSAGE_RECEIVED, messageEvent);
     }
 
     @Override
     public void onPeerConnected(Node peer) {
         Timber.d("Adding node: %s (%s)", peer.getDisplayName(), peer.getId());
-        dispatch(RxDispatchWrapper.SUBJECT_PEER_CONNECTED, peer);
+        dispatch(HermesWearable.SUBJECT_PEER_CONNECTED, peer);
     }
 
     @Override
     public void onPeerDisconnected(Node peer) {
         Timber.d("Removing node: %s (%s)", peer.getDisplayName(), peer.getId());
-        dispatch(RxDispatchWrapper.SUBJECT_PEER_DISCONNECTED, peer);
+        dispatch(HermesWearable.SUBJECT_PEER_DISCONNECTED, peer);
     }
 
     @Override
@@ -80,25 +77,25 @@ public class RxWearableDispatcherService extends WearableListenerService {
     @Override
     public void onChannelOpened(Channel channel) {
         Timber.d("Channel opening from %s: %s", channel.getNodeId(), channel.getPath());
-        dispatch(RxDispatchWrapper.SUBJECT_CHANNEL_OPENED, new ChannelEvent(channel));
+        dispatch(HermesWearable.SUBJECT_CHANNEL_OPENED, new ChannelEvent(channel));
     }
 
     @Override
     public void onChannelClosed(Channel channel, int closeReason, int appSpecificErrorCode) {
         Timber.d("Channel closing from %s: %s", channel.getNodeId(), channel.getPath());
-        dispatch(RxDispatchWrapper.SUBJECT_CHANNEL_OPENED, new ChannelEvent(channel, closeReason, appSpecificErrorCode));
+        dispatch(HermesWearable.SUBJECT_CHANNEL_OPENED, new ChannelEvent(channel, closeReason, appSpecificErrorCode));
     }
 
     @Override
     public void onInputClosed(Channel channel, int closeReason, int appSpecificErrorCode) {
         Timber.d("Channel InputStream closing from %s (%s) with reason %s (%s)", channel.getNodeId(), channel.getPath(), closeReason, appSpecificErrorCode);
-        dispatch(RxDispatchWrapper.SUBJECT_INPUT_CLOSED, new InputClosedEvent(channel, closeReason, appSpecificErrorCode));
+        dispatch(HermesWearable.SUBJECT_INPUT_CLOSED, new InputClosedEvent(channel, closeReason, appSpecificErrorCode));
     }
 
     @Override
     public void onOutputClosed(Channel channel, int closeReason, int appSpecificErrorCode) {
         Timber.d("Channel OutputStream closing from %s (%s) with reason %s (%s)", channel.getNodeId(), channel.getPath(), closeReason, appSpecificErrorCode);
-        dispatch(RxDispatchWrapper.SUBJECT_OUTPUT_CLOSED, new OutputClosedEvent(channel, closeReason, appSpecificErrorCode));
+        dispatch(HermesWearable.SUBJECT_OUTPUT_CLOSED, new OutputClosedEvent(channel, closeReason, appSpecificErrorCode));
     }
 
     private void dispatch(String subject, Object o) {

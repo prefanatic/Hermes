@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package edu.uri.egr.hermes;
+package edu.uri.egr.hermesble;
 
 import android.app.Application;
+import android.test.ApplicationTestCase;
 
-public class HermesApplication extends Application {
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        Hermes.Config config = new Hermes.Config();
-        Hermes.init(this, config);
+/**
+ * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
+ */
+public class ApplicationTest extends ApplicationTestCase<Application> {
+    public ApplicationTest() {
+        super(Application.class);
     }
 }

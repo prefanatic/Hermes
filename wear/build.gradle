@@ -28,6 +28,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':hermeslib')
+    compile project(':hermes-wear')
     compile 'com.google.android.support:wearable:1.2.0'
     compile 'com.google.android.gms:play-services-wearable:7.8.0'
 }

@@ -16,16 +16,12 @@
 
 package edu.uri.egr.hermes;
 
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.Environment;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.wearable.Node;
-import com.google.android.gms.wearable.Wearable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -33,18 +29,12 @@ import java.util.List;
 
 import edu.uri.egr.hermes.exceptions.HermesException;
 import edu.uri.egr.hermes.exceptions.RxGoogleApiException;
-import edu.uri.egr.hermes.services.RxWearableDispatcherService;
 import edu.uri.egr.hermes.wrappers.FileWrapper;
 import edu.uri.egr.hermes.wrappers.RxBleWrapper;
 import edu.uri.egr.hermes.wrappers.RxDispatchWrapper;
-import edu.uri.egr.hermes.wrappers.RxWearableWrapper;
 import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.exceptions.OnErrorThrowable;
-import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
-import rx.subjects.PublishSubject;
 import rx.subjects.SerializedSubject;
 import rx.subjects.Subject;
 import timber.log.Timber;
@@ -64,7 +54,6 @@ public class Hermes {
 
     // Children Classes
     private static RxDispatchWrapper mDispatchWrapper;
-    private static RxWearableWrapper mWearableWrapper;
     private static FileWrapper mFileWrapper;
     private static RxBleWrapper mBleWrapper;
 
@@ -91,7 +80,6 @@ public class Hermes {
 
         mInstance = new Hermes(context, config);
         mDispatchWrapper = RxDispatchWrapper.get();
-        mWearableWrapper = new RxWearableWrapper(mInstance);
         mFileWrapper = new FileWrapper(mInstance);
         mBleWrapper = new RxBleWrapper(mInstance);
     }
@@ -121,10 +109,6 @@ public class Hermes {
         return mDispatchWrapper;
     }
 
-    public RxWearableWrapper getWearableWrapper() {
-        return mWearableWrapper;
-    }
-
     public FileWrapper getFileWrapper() {
         return mFileWrapper;
     }
@@ -138,10 +122,6 @@ public class Hermes {
      */
     public <T> Observable<T> getWearableObservable(String subject) {
         return mDispatchWrapper.getObservable(subject);
-    }
-
-    public Observable<Node> getWearableNodes() {
-        return mWearableWrapper.getNodes();
     }
 
     /*
@@ -171,14 +151,6 @@ public class Hermes {
                 GoogleApiClient.Builder builder = new GoogleApiClient.Builder(context);
                 for (int i = 0; i < config.apis.size(); i++) {
                     builder.addApi(config.apis.get(i));
-
-                    // FIXME: 9/19/2015 This is hardcoded for WearableAPI.  Will future ones have something like this?
-                    if (config.apis.get(i).equals(Wearable.API)) {
-                        PackageManager manager = getContext().getPackageManager();
-                        ComponentName name = new ComponentName(RxWearableDispatcherService.class.getPackage().toString(), RxWearableDispatcherService.class.getName());
-
-                        manager.setComponentEnabledSetting(name, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-                    }
                 }
 
                 mGoogleApiClient = builder.build();

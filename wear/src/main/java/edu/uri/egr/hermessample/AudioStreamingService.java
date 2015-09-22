@@ -1,7 +1,6 @@
 package edu.uri.egr.hermessample;
 
 import android.content.Context;
-import android.content.Intent;
 
 import com.google.android.gms.wearable.Node;
 
@@ -11,6 +10,7 @@ import java.io.OutputStream;
 
 import edu.uri.egr.hermes.Hermes;
 import edu.uri.egr.hermes.services.AbstractAudioRecordingService;
+import edu.uri.egr.hermeswear.HermesWearable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -44,9 +44,9 @@ public class AudioStreamingService extends AbstractAudioRecordingService {
     public void onRecordingPrepare() {
         // Open an output stream to our phone.
         // TODO: 8/25/2015 Better detection of phone node, instead of this loop.
-        hermes.getWearableNodes()
+        HermesWearable.Node.getNodes()
                 .map(Node::getId)
-                .flatMap(node -> hermes.getWearableWrapper().openOutputStream(node, "audio_stream"))
+                .flatMap(node -> HermesWearable.Channel.openOutputStream(node, "audio_stream"))
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::outputStreamOpened, this::error, this::completed);

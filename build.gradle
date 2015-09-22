@@ -1,6 +1,27 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+apply plugin: 'maven'
+
+ext {
+    toolsVersion = "23.0.1"
+    kotlin_version = "0.13.1513"
+    googlePlay = "7.8.0"
+}
+
+group = 'com.github.prefanatic'
+version = '1.0'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            def repoUrl = getSdkDir() + "/extras/android/m2repository"
+
+            repository(url: "file:///$repoUrl")
+        }
+    }
+}
 
 buildscript {
+    ext.kotlin_version = "0.13.1513"
     repositories {
         jcenter()
     }
@@ -10,6 +31,9 @@ buildscript {
 
         // Java 8 Support
         classpath 'me.tatarka:gradle-retrolambda:3.2+'
+
+        // Kotlin
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -24,6 +48,14 @@ allprojects {
         maven { url 'https://clojars.org/repo/' }
     }
 }
+
+def getSdkDir() {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+    return properties.getProperty('sdk.dir')
+}
+
 
 def gitCommitCount() {
     try {

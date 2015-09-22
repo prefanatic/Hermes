@@ -33,15 +33,6 @@ import rx.subjects.Subject;
 import timber.log.Timber;
 
 public class RxDispatchWrapper {
-    public static final String SUBJECT_DATA_CHANGED = "data.changed";
-    public static final String SUBJECT_MESSAGE_RECEIVED = "message.received";
-    public static final String SUBJECT_PEER_CONNECTED = "peer.connected";
-    public static final String SUBJECT_PEER_DISCONNECTED = "peer.disconnected";
-    public static final String SUBJECT_NODES_CONNECTED = "nodes.connected";
-    public static final String SUBJECT_CHANNEL_OPENED = "channel.opened";
-    public static final String SUBJECT_CHANNEL_CLOSED = "channel.closed";
-    public static final String SUBJECT_INPUT_CLOSED = "input.closed";
-    public static final String SUBJECT_OUTPUT_CLOSED = "output.closed";
 
     private final Hermes hermes = Hermes.get();
     private final SimpleArrayMap<String, Subject<?, ?>> subjectMap = new SimpleArrayMap();
@@ -51,15 +42,6 @@ public class RxDispatchWrapper {
     private RxDispatchWrapper() {
         // Create subjects for all our dispatch events.
         // TODO: There must be a better way!
-        createSubject(SUBJECT_DATA_CHANGED);
-        createSubject(SUBJECT_MESSAGE_RECEIVED);
-        createSubject(SUBJECT_PEER_CONNECTED);
-        createSubject(SUBJECT_PEER_DISCONNECTED);
-        createSubject(SUBJECT_NODES_CONNECTED);
-        createSubject(SUBJECT_CHANNEL_OPENED);
-        createSubject(SUBJECT_CHANNEL_CLOSED);
-        createSubject(SUBJECT_INPUT_CLOSED);
-        createSubject(SUBJECT_OUTPUT_CLOSED);
         createBehaviorSubject(AbstractAudioRecordingService.SUBJECT_STATE, AbstractAudioRecordingService.STATE_IDLE); // ????
     }
 

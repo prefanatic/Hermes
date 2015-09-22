@@ -30,5 +30,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     wearApp project(':wear')
     compile project(':hermeslib')
+    compile project(':hermes-wear')
+    compile project(':hermes-ble')
     compile 'com.android.support:appcompat-v7:23.0.0'
 }

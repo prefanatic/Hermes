@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 apply plugin: 'com.android.library'
 apply plugin: 'me.tatarka.retrolambda'
-apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion = project.toolsVersion
+    buildToolsVersion "23.0.1"
 
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode = gitCommitCount()
+        versionCode 1
         versionName "1.0"
     }
     buildTypes {
@@ -33,9 +33,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    lintOptions {
-        abortOnError false
-    }
     compileOptions {
         sourceCompatibility 1.8
         targetCompatibility 1.8
@@ -43,17 +40,8 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile project(':hermeslib')
 
-    // Google Play Services Base
-    compile 'com.google.android.gms:play-services-base:7.8.0'
-    compile 'com.google.android.gms:play-services-wearable:7.8.0'
-
-    // Logging
-    compile 'com.jakewharton.timber:timber:3.0.1'
-    compile 'org.apache.commons:commons-csv:1.2'
-
-    // ReactiveX
-    compile 'io.reactivex:rxandroid:1.0.1'
-    compile 'io.reactivex:rxjava:1.0.14'
+    compile "com.google.android.gms:play-services-wearable:$project.googlePlay"
 }

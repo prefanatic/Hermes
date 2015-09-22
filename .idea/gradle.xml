@@ -9,6 +9,8 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/hermes-ble" />
+            <option value="$PROJECT_DIR$/hermes-wear" />
             <option value="$PROJECT_DIR$/hermeslib" />
             <option value="$PROJECT_DIR$/mobile" />
             <option value="$PROJECT_DIR$/wear" />
