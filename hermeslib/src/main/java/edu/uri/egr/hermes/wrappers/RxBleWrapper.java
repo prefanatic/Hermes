@@ -18,13 +18,9 @@ package edu.uri.egr.hermes.wrappers;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothProfile;
-import android.bluetooth.le.BluetoothLeScanner;
-import android.bluetooth.le.ScanCallback;
-import android.bluetooth.le.ScanResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +34,7 @@ import edu.uri.egr.hermes.events.BleEvent;
 import edu.uri.egr.hermes.events.BleServiceEvent;
 import edu.uri.egr.hermes.services.BluetoothLeService;
 import rx.Observable;
-import rx.functions.Action1;
+import rx.Subscription;
 import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
@@ -62,17 +58,19 @@ public class RxBleWrapper {
 
         mBluetoothAdapter.startLeScan(callback);
 
-        Observable.just(null)
-                .delay(scanPeriod, TimeUnit.SECONDS)
-                .doOnCompleted(() -> {
-                    mBluetoothAdapter.stopLeScan(callback);
-                    subject.onCompleted();
-                })
-                .subscribe();
+        Subscription delaySubsciption =
+                Observable.just(null)
+                        .delay(scanPeriod, TimeUnit.SECONDS)
+                        .doOnCompleted(subject::onCompleted)
+                        .subscribe();
 
         return subject.asObservable()
                 .filter(device -> !deviceList.contains(device))
-                .doOnNext(deviceList::add);
+                .doOnNext(deviceList::add)
+                .doOnUnsubscribe(() -> {
+                    delaySubsciption.unsubscribe();
+                    mBluetoothAdapter.stopLeScan(callback);
+                });
     }
 
     public Observable<BleConnectionEvent> connect(BluetoothDevice device) {
@@ -85,25 +83,25 @@ public class RxBleWrapper {
         PublishSubject<BleEvent> subject = PublishSubject.create();
 
         serviceObservable.subscribe(event -> {
-                    Timber.d("Discovered: %s", event.service.getUuid());
+            Timber.d("Discovered: %s", event.service.getUuid());
 
-                    if (event.service.getUuid().toString().equals(serviceUuid)) {
-                        BluetoothGattCharacteristic characteristic =
-                                event.service.getCharacteristic(UUID.fromString(characteristicUuid));
+            if (event.service.getUuid().toString().equals(serviceUuid)) {
+                BluetoothGattCharacteristic characteristic =
+                        event.service.getCharacteristic(UUID.fromString(characteristicUuid));
 
-                        event.gatt.setCharacteristicNotification(characteristic, true);
-                        event.gatt.readCharacteristic(characteristic);
+                event.gatt.setCharacteristicNotification(characteristic, true);
+                event.gatt.readCharacteristic(characteristic);
 
-                        // FIXME: 9/10/15 This isn't correct!!!!!!
-                        BluetoothGattDescriptor config = characteristic.getDescriptor(
-                                UUID.fromString(RBLGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
-                        config.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                // FIXME: 9/10/15 This isn't correct!!!!!!
+                BluetoothGattDescriptor config = characteristic.getDescriptor(
+                        UUID.fromString(RBLGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
+                config.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
 
-                        event.gatt.writeDescriptor(config);
+                event.gatt.writeDescriptor(config);
 
-                        Timber.d("Subscribed to characteristic.");
-                    }
-                });
+                Timber.d("Subscribed to characteristic.");
+            }
+        });
 
         observable.subscribe(event -> {
             switch (event.type) {

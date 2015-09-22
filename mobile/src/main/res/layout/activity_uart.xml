@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Copyright 2015 Cody Goldberg
   ~
@@ -14,9 +15,9 @@
   ~ limitations under the License.
   -->
 
-<resources>
-    <string name="app_name">Hermes</string>
-    <string name="ble_search_title">Searching for BLE devices</string>
-    <string name="ble_search_cancel">Cancel</string>
-    <string name="ble_search_continue">Continue</string>
-</resources>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+</LinearLayout>
