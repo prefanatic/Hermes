@@ -14,16 +14,23 @@
  * limitations under the License.
  */
 
-package edu.uri.egr.hermes;
+package edu.uri.egr.hermessample;
 
-import android.app.Application;
+import com.google.android.gms.wearable.Wearable;
 
-public class HermesApplication extends Application {
+import edu.uri.egr.hermes.Hermes;
+
+/**
+ * Created by cody on 9/22/15.
+ */
+public class Application extends android.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
 
-        Hermes.Config config = new Hermes.Config();
+        Hermes.Config config = new Hermes.Config()
+                .addApi(Wearable.API);
+
         Hermes.init(this, config);
     }
 }
