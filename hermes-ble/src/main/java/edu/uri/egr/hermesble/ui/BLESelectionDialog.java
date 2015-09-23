@@ -29,6 +29,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import edu.uri.egr.hermes.Hermes;
+import edu.uri.egr.hermesble.HermesBLE;
 import edu.uri.egr.hermesble.R;
 import rx.Observable;
 import rx.Single;
@@ -89,7 +90,7 @@ public class BLESelectionDialog extends DialogFragment {
     }
 
     private void subscribeToFinder() {
-        mSubscription = hermes.getBleWrapper().findDevices(10)
+        mSubscription = HermesBLE.findDevices(10)
                 .subscribe(mAdapter::addDevice, this::error, this::searchCompleted);
     }
 

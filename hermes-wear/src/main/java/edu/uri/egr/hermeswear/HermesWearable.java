@@ -50,31 +50,31 @@ public class HermesWearable {
     }
 
     public static Observable<MessageEvent> getMessageEvent() {
-        return hermes.getDispatchWrapper().getObservable(SUBJECT_MESSAGE_RECEIVED);
+        return Hermes.Dispatch.getObservable(SUBJECT_MESSAGE_RECEIVED);
     }
 
     public static Observable<ChannelEvent> getChannelOpened() {
-        return hermes.getDispatchWrapper().getObservable(SUBJECT_CHANNEL_OPENED);
+        return Hermes.Dispatch.getObservable(SUBJECT_CHANNEL_OPENED);
     }
 
     public static Observable<ChannelEvent> getChannelClosed() {
-        return hermes.getDispatchWrapper().getObservable(SUBJECT_CHANNEL_CLOSED);
+        return Hermes.Dispatch.getObservable(SUBJECT_CHANNEL_CLOSED);
     }
 
     public static Observable<InputClosedEvent> getInputClosed() {
-        return hermes.getDispatchWrapper().getObservable(SUBJECT_INPUT_CLOSED);
+        return Hermes.Dispatch.getObservable(SUBJECT_INPUT_CLOSED);
     }
 
     public static Observable<OutputClosedEvent> getOutputClosed() {
-        return hermes.getDispatchWrapper().getObservable(SUBJECT_OUTPUT_CLOSED);
+        return Hermes.Dispatch.getObservable(SUBJECT_OUTPUT_CLOSED);
     }
 
     public static Observable<Node> getPeerConnected() {
-        return hermes.getDispatchWrapper().getObservable(SUBJECT_PEER_CONNECTED);
+        return Hermes.Dispatch.getObservable(SUBJECT_PEER_CONNECTED);
     }
 
     public static Observable<Node> getPeerDisconnected() {
-        return hermes.getDispatchWrapper().getObservable(SUBJECT_PEER_DISCONNECTED);
+        return Hermes.Dispatch.getObservable(SUBJECT_PEER_DISCONNECTED);
     }
 
     static GoogleApiClient getClientBlocking() {

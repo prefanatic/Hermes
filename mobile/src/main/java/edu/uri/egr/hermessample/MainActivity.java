@@ -4,12 +4,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 
-import edu.uri.egr.hermes.Hermes;
-import edu.uri.egr.hermes.attributes.RBLGattAttributes;
 import rx.Subscription;
-import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
     private Subscription mSubscription;
@@ -19,13 +15,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button button = (Button) findViewById(R.id.button);
-        button.setOnClickListener(v -> Hermes.get().getBleWrapper().findDevices(5)
-                .doOnNext(device -> Timber.d(device.getName() + " -- " + device.getAddress()))
-                .filter(device -> device.getAddress().equals("72:3A:DA:81:3C:14"))
-                .doOnNext(device -> Hermes.get().getBleWrapper().connectAndListen(device, RBLGattAttributes.BLE_SHIELD_SERVICE, RBLGattAttributes.BLE_SHIELD_RX))
-                        //.flatMap(device -> Hermes.get().getBleWrapper().connectAndList(device))
-                .subscribe());
     }
 
     @Override

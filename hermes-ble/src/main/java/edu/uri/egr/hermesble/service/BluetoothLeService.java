@@ -18,26 +18,16 @@ package edu.uri.egr.hermesble.service;
 
 import android.app.Service;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattDescriptor;
-import android.bluetooth.BluetoothGattService;
-import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 
 import edu.uri.egr.hermes.Hermes;
-import edu.uri.egr.hermes.events.BleCharacteristicEvent;
-import edu.uri.egr.hermes.events.BleConnectionEvent;
-import edu.uri.egr.hermes.events.BleDescriptorEvent;
-import edu.uri.egr.hermes.events.BleServiceEvent;
 import edu.uri.egr.hermesble.constant.BLEDispatch;
+import edu.uri.egr.hermesble.event.BleConnectionEvent;
 import edu.uri.egr.hermesble.factory.BluetoothGattCallbackFactory;
 import rx.Observable;
-import rx.subjects.Subject;
-import timber.log.Timber;
 
 public class BluetoothLeService extends Service {
     public static final String EXTRA_DEVICE = "bluetooth.le.device";

@@ -25,11 +25,11 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 
 import edu.uri.egr.hermes.Hermes;
-import edu.uri.egr.hermes.events.BleCharacteristicEvent;
-import edu.uri.egr.hermes.events.BleConnectionEvent;
-import edu.uri.egr.hermes.events.BleDescriptorEvent;
-import edu.uri.egr.hermes.events.BleServiceEvent;
 import edu.uri.egr.hermesble.constant.BLEDispatch;
+import edu.uri.egr.hermesble.event.BleCharacteristicEvent;
+import edu.uri.egr.hermesble.event.BleConnectionEvent;
+import edu.uri.egr.hermesble.event.BleDescriptorEvent;
+import edu.uri.egr.hermesble.event.BleServiceEvent;
 import rx.subjects.Subject;
 import timber.log.Timber;
 

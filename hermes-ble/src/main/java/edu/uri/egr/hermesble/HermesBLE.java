@@ -28,12 +28,12 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import edu.uri.egr.hermes.Hermes;
-import edu.uri.egr.hermes.attributes.RBLGattAttributes;
-import edu.uri.egr.hermes.events.BleConnectionEvent;
-import edu.uri.egr.hermes.events.BleEvent;
-import edu.uri.egr.hermes.events.BleServiceEvent;
-import edu.uri.egr.hermes.services.BluetoothLeService;
+import edu.uri.egr.hermesble.attributes.RBLGattAttributes;
 import edu.uri.egr.hermesble.constant.BLEDispatch;
+import edu.uri.egr.hermesble.event.BleConnectionEvent;
+import edu.uri.egr.hermesble.event.BleEvent;
+import edu.uri.egr.hermesble.event.BleServiceEvent;
+import edu.uri.egr.hermesble.service.BluetoothLeService;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import timber.log.Timber;

@@ -45,7 +45,7 @@ public class FileLog {
     private String[] valuePool;
 
     public FileLog(String name, String path) {
-        this.file = Hermes.get().getFileWrapper().create(name, path);
+        this.file = Hermes.File.create(name, path);
     }
 
     public FileLog(String name, File file) {
@@ -53,7 +53,7 @@ public class FileLog {
     }
 
     public FileLog(String name) {
-        this.file = Hermes.get().getFileWrapper().create(name);
+        this.file = Hermes.File.create(name);
     }
 
     public static void enableAutoVisible(boolean b) {
