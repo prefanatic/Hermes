@@ -44,4 +44,5 @@ dependencies {
     compile project(':hermeslib')
 
     compile "com.android.support:appcompat-v7:$project.appCompat"
+    compile "com.android.support:recyclerview-v7:$project.appCompat"
 }

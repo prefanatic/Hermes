@@ -16,7 +16,5 @@
 
 <resources>
     <string name="app_name">Hermes</string>
-    <string name="ble_search_title">Searching for BLE devices</string>
-    <string name="ble_search_cancel">Cancel</string>
-    <string name="ble_search_continue">Continue</string>
+
 </resources>

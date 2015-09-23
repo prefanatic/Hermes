@@ -20,7 +20,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import edu.uri.egr.hermes.Hermes;
-import edu.uri.egr.hermes.ui.BLESelectionDialog;
+import edu.uri.egr.hermesble.ui.BLESelectionDialog;
 
 public class UartSampleActivity extends AppCompatActivity {
     private Hermes hermes = Hermes.get();

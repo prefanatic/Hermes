@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package edu.uri.egr.hermes.ui;
+package edu.uri.egr.hermesble.ui;
 
 import android.bluetooth.BluetoothDevice;
 import android.graphics.Color;
@@ -27,8 +27,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.uri.egr.hermes.R;
-import timber.log.Timber;
+import edu.uri.egr.hermesble.R;
+
 
 public class BLEDeviceAdapter extends RecyclerView.Adapter<BLEDeviceAdapter.ViewHolder> implements View.OnClickListener {
     private final List<BluetoothDevice> devices = new ArrayList<>();

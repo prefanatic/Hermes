@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package edu.uri.egr.hermes.ui;
+package edu.uri.egr.hermesble.ui;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -28,7 +28,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import edu.uri.egr.hermes.Hermes;
-import edu.uri.egr.hermes.R;
+import edu.uri.egr.hermesble.R;
 import rx.Subscription;
 
 public class BLESelectionDialog extends DialogFragment {
