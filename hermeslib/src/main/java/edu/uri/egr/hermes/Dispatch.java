@@ -29,8 +29,6 @@ import rx.subjects.SerializedSubject;
 import rx.subjects.Subject;
 
 public class Dispatch {
-
-    private final Hermes hermes = Hermes.get();
     private final SimpleArrayMap<String, Subject<?, ?>> subjectMap = new SimpleArrayMap();
 
     protected Dispatch() {

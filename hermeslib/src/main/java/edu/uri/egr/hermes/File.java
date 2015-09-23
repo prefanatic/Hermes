@@ -23,8 +23,6 @@ import edu.uri.egr.hermes.helpers.ExternalStorage;
 import timber.log.Timber;
 
 public class File {
-    private final Hermes hermes = Hermes.get();
-
     protected File() {
 
     }
@@ -37,7 +35,7 @@ public class File {
      * @return File
      */
     public java.io.File create(String name, String path) {
-        java.io.File base = new java.io.File(hermes.getRootFolder(), path);
+        java.io.File base = new java.io.File(Hermes.get().getRootFolder(), path);
         if (base.mkdirs())
             Timber.d("Making directories to %s", path);
 
@@ -51,7 +49,7 @@ public class File {
      * @return File
      */
     public java.io.File create(String name) {
-        java.io.File base = hermes.getRootFolder();
+        java.io.File base = Hermes.get().getRootFolder();
         return new java.io.File(base, name);
     }
 
@@ -62,7 +60,7 @@ public class File {
      * @return File
      */
     public java.io.File createCache(String name) {
-        return new java.io.File(hermes.getContext().getCacheDir(), name);
+        return new java.io.File(Hermes.get().getContext().getCacheDir(), name);
     }
 
     /**
@@ -98,6 +96,6 @@ public class File {
     public void makeVisible(java.io.File file) {
         Intent mediaScanner = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         mediaScanner.setData(Uri.fromFile(file));
-        hermes.getContext().sendBroadcast(mediaScanner);
+        Hermes.get().getContext().sendBroadcast(mediaScanner);
     }
 }
