@@ -31,7 +31,7 @@ import edu.uri.egr.hermesble.R;
 
 
 public class BLEDeviceAdapter extends RecyclerView.Adapter<BLEDeviceAdapter.ViewHolder> implements View.OnClickListener {
-    private final List<BluetoothDevice> devices = new ArrayList<>();
+    public final List<BluetoothDevice> devices = new ArrayList<>();
     public ViewHolder mSelected;
     private RecyclerView mRecycler;
 

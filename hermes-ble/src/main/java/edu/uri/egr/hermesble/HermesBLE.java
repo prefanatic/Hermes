@@ -33,6 +33,7 @@ import edu.uri.egr.hermes.events.BleConnectionEvent;
 import edu.uri.egr.hermes.events.BleEvent;
 import edu.uri.egr.hermes.events.BleServiceEvent;
 import edu.uri.egr.hermes.services.BluetoothLeService;
+import edu.uri.egr.hermesble.constant.BLEDispatch;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import timber.log.Timber;
@@ -68,13 +69,13 @@ public class HermesBLE {
                 .doOnNext(deviceList::add);
     }
 
-    public Observable<BleConnectionEvent> connect(BluetoothDevice device) {
+    public static Observable<BleConnectionEvent> connect(BluetoothDevice device) {
         return BluetoothLeService.connect(hermes.getContext(), device);
     }
 
-    public Observable<BleEvent> connectAndListen(BluetoothDevice device, String serviceUuid, String characteristicUuid) {
+    public static Observable<BleEvent> connectAndListen(BluetoothDevice device, String serviceUuid, String characteristicUuid) {
         Observable<BleConnectionEvent> observable = connect(device);
-        Observable<BleServiceEvent> serviceObservable = hermes.getDispatchWrapper().getObservable(BluetoothLeService.SUBJECT_SERVICES);
+        Observable<BleServiceEvent> serviceObservable = Hermes.Dispatch.getObservable(BLEDispatch.services(device));
         PublishSubject<BleEvent> subject = PublishSubject.create();
 
         serviceObservable.subscribe(event -> {

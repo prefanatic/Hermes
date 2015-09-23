@@ -19,6 +19,7 @@ package edu.uri.egr.hermesble.ui;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -29,13 +30,28 @@ import android.widget.ProgressBar;
 
 import edu.uri.egr.hermes.Hermes;
 import edu.uri.egr.hermesble.R;
+import rx.Observable;
+import rx.Single;
+import rx.Subscriber;
 import rx.Subscription;
+import rx.subjects.PublishSubject;
 
 public class BLESelectionDialog extends DialogFragment {
     private Hermes hermes = Hermes.get();
     private BLEDeviceAdapter mAdapter;
     private Subscription mSubscription;
     private ProgressBar mProgressBar;
+    private PublishSubject<BluetoothDevice> mDeviceSubject;
+
+    public BLESelectionDialog() {
+        super();
+
+        mDeviceSubject = PublishSubject.create();
+    }
+
+    public Observable<BluetoothDevice> getObservable() {
+        return mDeviceSubject.asObservable();
+    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -50,11 +66,12 @@ public class BLESelectionDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
                 .setTitle(R.string.ble_search_title)
                 .setNeutralButton(R.string.ble_search_cancel, (dialog, which) -> dialog.cancel())
-                .setPositiveButton(R.string.ble_search_continue, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
+                .setPositiveButton(R.string.ble_search_continue, (dialog, which) -> {
+                    dialog.dismiss();
+
+                    BluetoothDevice selected = mAdapter.devices.get(recyclerView.getChildAdapterPosition(mAdapter.mSelected.itemView));
+                    mDeviceSubject.onNext(selected);
+                    mDeviceSubject.onCompleted();
                 })
                 .setView(view);
 
