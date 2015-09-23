@@ -5,16 +5,7 @@ It provides wrappers to Google Play Services, and base classes for simple develo
 Usage
 -----
 
-In your Android Manifest:
-
-```xml
-<manifest ...>
-    <application android:name="edu.uri.egr.hermes.HermesApplication" ...>
-    </application>
-</manifest>
-```
-
-or, in your Android application class:
+In your Android application class:
 ```java
 public class MyApplication extends Application {
     @Override
@@ -36,7 +27,11 @@ Download
 
 In your build.gradle:
 ```groovy
-compile 'edu.uri.egr.hermes:x:y:z'
+repositories {
+    maven { url "https://jitpack.io" }
+}
+
+compile 'TODO'
 ```
 
 
