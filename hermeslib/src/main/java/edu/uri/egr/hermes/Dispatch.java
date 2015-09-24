@@ -38,7 +38,10 @@ public class Dispatch {
     }
 
     public <T> Subject<T, T> createSubject(String key) {
-        return (Subject<T, T>) subjectMap.put(key, new SerializedSubject(PublishSubject.create()));
+        Subject<T, T> subject = new SerializedSubject(PublishSubject.create());
+        subjectMap.put(key, subject);
+
+        return subject;
     }
 
     public <T> Subject<T, T> createBehaviorSubject(String key, T defaultValue) {
@@ -50,6 +53,10 @@ public class Dispatch {
             return createSubject(key);
 
         return (Subject<T, T>) subjectMap.get(key);
+    }
+
+    public <T> Observable<T> getObservable(String key, Class<T> c) {
+        return getObservable(key).cast(c);
     }
 
     public <T> Observable<T> getObservable(String key) {

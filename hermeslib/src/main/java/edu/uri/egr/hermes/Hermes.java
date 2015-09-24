@@ -17,6 +17,7 @@
 package edu.uri.egr.hermes;
 
 import android.content.Context;
+import android.os.Debug;
 import android.os.Environment;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -68,7 +69,7 @@ public class Hermes {
 
         mRootFolder.mkdirs();
 
-        Timber.i("Hermes (%s) - Cody Goldberg [WBL]");
+        Timber.i("Hermes (%s) - Cody Goldberg [WBL]", BuildConfig.VERSION_CODE);
     }
 
     public static void init(Context context, Config config) {

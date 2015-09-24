@@ -21,6 +21,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import edu.uri.egr.hermes.Hermes;
 import edu.uri.egr.hermesble.HermesBLE;
+import edu.uri.egr.hermesble.attributes.BLStandardAttributes;
 import edu.uri.egr.hermesble.attributes.RBLGattAttributes;
 import edu.uri.egr.hermesble.ui.BLESelectionDialog;
 
@@ -35,7 +36,7 @@ public class UartSampleActivity extends AppCompatActivity {
         BLESelectionDialog dialog = new BLESelectionDialog();
         dialog.getObservable()
                 .subscribe(device -> {
-                    HermesBLE.connectAndListen(device, RBLGattAttributes.BLE_SHIELD_SERVICE, RBLGattAttributes.BLE_SHIELD_RX);
+                    HermesBLE.connectAndListen(device, BLStandardAttributes.SERVICE_HEART_RATE, BLStandardAttributes.CHAR_HEART_RATE_MEASUREMENT);
                 });
 
         dialog.show(getFragmentManager(), "dialog");

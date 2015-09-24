@@ -21,6 +21,8 @@
                  android:label="@string/app_name"
         >
 
+        <service android:name=".service.BluetoothLeService"/>
+
     </application>
 
 </manifest>

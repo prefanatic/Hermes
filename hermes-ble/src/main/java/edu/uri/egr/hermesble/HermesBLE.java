@@ -18,6 +18,7 @@ package edu.uri.egr.hermesble;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothProfile;
@@ -28,15 +29,14 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import edu.uri.egr.hermes.Hermes;
-import edu.uri.egr.hermesble.attributes.RBLGattAttributes;
+import edu.uri.egr.hermesble.attributes.BLStandardAttributes;
 import edu.uri.egr.hermesble.constant.BLEDispatch;
+import edu.uri.egr.hermesble.event.BleCharacteristicEvent;
 import edu.uri.egr.hermesble.event.BleConnectionEvent;
-import edu.uri.egr.hermesble.event.BleEvent;
 import edu.uri.egr.hermesble.event.BleServiceEvent;
 import edu.uri.egr.hermesble.service.BluetoothLeService;
 import rx.Observable;
 import rx.subjects.PublishSubject;
-import timber.log.Timber;
 
 /**
  * Created by cody on 9/22/15.
@@ -49,6 +49,11 @@ public class HermesBLE {
 
     }
 
+    /**
+     * Locates all BLE devices.
+     * @param scanPeriod Length in seconds to scan for.
+     * @return Observable of BluetoothDevice found.
+     */
     public static Observable<BluetoothDevice> findDevices(int scanPeriod) {
         PublishSubject<BluetoothDevice> subject = PublishSubject.create();
         List<BluetoothDevice> deviceList = new ArrayList<>();
@@ -58,61 +63,68 @@ public class HermesBLE {
 
         Observable.just(null)
                 .delay(scanPeriod, TimeUnit.SECONDS)
-                .doOnCompleted(() -> {
-                    mBluetoothAdapter.stopLeScan(callback);
-                    subject.onCompleted();
-                })
+                .doOnCompleted(subject::onCompleted)
                 .subscribe();
 
         return subject.asObservable()
+                .doOnCompleted(() -> mBluetoothAdapter.stopLeScan(callback))
                 .filter(device -> !deviceList.contains(device))
                 .doOnNext(deviceList::add);
     }
 
+    /**
+     * Connect to a specific BluetoothDevice.
+     * @param device A BluetoothDevice to connect to.
+     * @return Observable of BleConnectionEvent.
+     */
     public static Observable<BleConnectionEvent> connect(BluetoothDevice device) {
+        // TODO: 9/23/2015 Throw Observable error if we cannot connect.
         return BluetoothLeService.connect(hermes.getContext(), device);
     }
 
-    public static Observable<BleEvent> connectAndListen(BluetoothDevice device, String serviceUuid, String characteristicUuid) {
-        Observable<BleConnectionEvent> observable = connect(device);
-        Observable<BleServiceEvent> serviceObservable = Hermes.Dispatch.getObservable(BLEDispatch.services(device));
-        PublishSubject<BleEvent> subject = PublishSubject.create();
+    /**
+     * Listen to a specific notification under a Bluetooth service.
+     * @param gatt BluetoothGatt object that resides with the BluetoothDevice.
+     * @param serviceUuid String of Bluetooth service used.
+     * @param characteristicUuid String of Bluetooth characteristic to listen to.
+     * @return Observable of BleCharacteristicEvent.
+     */
+    public static Observable<BleCharacteristicEvent> listen(BluetoothGatt gatt, String serviceUuid, String characteristicUuid) {
+        Hermes.Dispatch.getObservable(BLEDispatch.services(gatt.getDevice()), BleServiceEvent.class)
+                .subscribe(event -> {
+                    if (event.service.getUuid().toString().equals(serviceUuid)) {
+                        // Get a hold of the characteristic.
+                        BluetoothGattCharacteristic characteristic =
+                                event.service.getCharacteristic(UUID.fromString(characteristicUuid));
 
-        serviceObservable.subscribe(event -> {
-            Timber.d("Discovered: %s", event.service.getUuid());
+                        // We want to read from it.
+                        event.gatt.setCharacteristicNotification(characteristic, true);
+                        event.gatt.readCharacteristic(characteristic);
 
-            if (event.service.getUuid().toString().equals(serviceUuid)) {
-                BluetoothGattCharacteristic characteristic =
-                        event.service.getCharacteristic(UUID.fromString(characteristicUuid));
+                        // And receive events from it.
+                        BluetoothGattDescriptor config = characteristic.getDescriptor(
+                                UUID.fromString(BLStandardAttributes.DESC_CLIENT_CHARACTERISTIC_CONFIG));
+                        config.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
 
-                event.gatt.setCharacteristicNotification(characteristic, true);
-                event.gatt.readCharacteristic(characteristic);
+                        event.gatt.writeDescriptor(config);
+                    }
+                });
 
-                // FIXME: 9/10/15 This isn't correct!!!!!!
-                BluetoothGattDescriptor config = characteristic.getDescriptor(
-                        UUID.fromString(RBLGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
-                config.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+        gatt.discoverServices();
 
-                event.gatt.writeDescriptor(config);
+        return Hermes.Dispatch.getObservable(BLEDispatch.characteristic(gatt.getDevice()));
+    }
 
-                Timber.d("Subscribed to characteristic.");
-            }
-        });
-
-        observable.subscribe(event -> {
-            switch (event.type) {
-                case BluetoothProfile.STATE_CONNECTED:
-                    Timber.d("Connected!");
-
-                    event.gatt.discoverServices();
-
-                    break;
-                case BluetoothProfile.STATE_DISCONNECTED:
-                    Timber.d("Disconnected :(");
-                    break;
-            }
-        });
-
-        return null;
+    /**
+     * Connects and then proceeds to listen to a notification.
+     * @param device BluetoothDevice to connect to.
+     * @param serviceUuid Bluetooth service.
+     * @param characteristicUuid Bluetooth characteristic.
+     * @return Observable of BleCharacteristicEvent
+     */
+    public static Observable<BleCharacteristicEvent> connectAndListen(BluetoothDevice device, String serviceUuid, String characteristicUuid) {
+        return connect(device)
+                .filter(event -> event.type == BluetoothProfile.STATE_CONNECTED)
+                .flatMap(event -> listen(event.gatt, serviceUuid, characteristicUuid));
     }
 }
