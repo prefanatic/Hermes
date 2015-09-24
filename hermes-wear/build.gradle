@@ -41,7 +41,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(':hermeslib')
+    compile project(':hermes-core')
 
     compile "com.google.android.gms:play-services-wearable:$project.googlePlay"
 }

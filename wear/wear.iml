@@ -100,7 +100,7 @@
     <orderEntry type="library" exported="" name="wearable-1.2.0" level="project" />
     <orderEntry type="library" exported="" name="commons-csv-1.2" level="project" />
     <orderEntry type="module" module-name="hermes-wear" exported="" />
-    <orderEntry type="module" module-name="hermeslib" exported="" />
+    <orderEntry type="module" module-name="hermes-core" exported="" />
   </component>
   <component name="org.twodividedbyzero.idea.findbugs">
     <option name="_basePreferences">

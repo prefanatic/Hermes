@@ -29,7 +29,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     wearApp project(':wear')
-    compile project(':hermeslib')
+    compile project(':hermes-core')
     compile project(':hermes-wear')
     compile project(':hermes-ble')
 

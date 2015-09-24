@@ -41,8 +41,9 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(':hermeslib')
+    compile project(':hermes-core')
 
     compile "com.android.support:appcompat-v7:$project.appCompat"
     compile "com.android.support:recyclerview-v7:$project.appCompat"
+    compile 'com.jakewharton.rxbinding:rxbinding:0.2.0'
 }
