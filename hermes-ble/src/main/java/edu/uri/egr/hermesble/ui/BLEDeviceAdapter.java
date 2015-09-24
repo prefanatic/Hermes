@@ -24,16 +24,26 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.jakewharton.rxbinding.view.RxView;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import edu.uri.egr.hermesble.R;
+import rx.Observable;
+import rx.Subscription;
+import rx.subjects.BehaviorSubject;
 
 
 public class BLEDeviceAdapter extends RecyclerView.Adapter<BLEDeviceAdapter.ViewHolder> implements View.OnClickListener {
     public final List<BluetoothDevice> devices = new ArrayList<>();
     public ViewHolder mSelected;
     private RecyclerView mRecycler;
+    private BehaviorSubject<View> mClickSubject = BehaviorSubject.create();
+
+    public Observable<View> getClickObservable() {
+        return mClickSubject.asObservable();
+    }
 
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
@@ -80,6 +90,7 @@ public class BLEDeviceAdapter extends RecyclerView.Adapter<BLEDeviceAdapter.View
         mSelected = (ViewHolder) mRecycler.getChildViewHolder(v);
 
         notifyDataSetChanged();
+        mClickSubject.onNext(v);
     }
 
     @Override

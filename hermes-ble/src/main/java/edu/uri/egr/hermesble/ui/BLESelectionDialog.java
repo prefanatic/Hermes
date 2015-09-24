@@ -32,8 +32,6 @@ import edu.uri.egr.hermes.Hermes;
 import edu.uri.egr.hermesble.HermesBLE;
 import edu.uri.egr.hermesble.R;
 import rx.Observable;
-import rx.Single;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.subjects.PublishSubject;
 
@@ -43,6 +41,7 @@ public class BLESelectionDialog extends DialogFragment {
     private Subscription mSubscription;
     private ProgressBar mProgressBar;
     private PublishSubject<BluetoothDevice> mDeviceSubject;
+    private View mSelected;
 
     public BLESelectionDialog() {
         super();
@@ -53,6 +52,8 @@ public class BLESelectionDialog extends DialogFragment {
     public Observable<BluetoothDevice> getObservable() {
         return mDeviceSubject.asObservable();
     }
+
+
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -76,10 +77,23 @@ public class BLESelectionDialog extends DialogFragment {
                 })
                 .setView(view);
 
+        AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(dialog1 -> ((AlertDialog) dialog1).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false));
+
+        // TODO: 9/24/2015 Do we need to unsubscribe from this when our adapter is destroyed?
+        mAdapter.getClickObservable()
+                .subscribe(v -> {
+                    mSelected = v;
+
+                   dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
+                });
+
         subscribeToFinder();
 
-        return builder.create();
+        return dialog;
     }
+
+
 
     private void error(Throwable e) {
 

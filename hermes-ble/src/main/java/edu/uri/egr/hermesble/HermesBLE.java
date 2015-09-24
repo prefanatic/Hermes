@@ -36,7 +36,9 @@ import edu.uri.egr.hermesble.event.BleConnectionEvent;
 import edu.uri.egr.hermesble.event.BleServiceEvent;
 import edu.uri.egr.hermesble.service.BluetoothLeService;
 import rx.Observable;
+import rx.functions.Action0;
 import rx.subjects.PublishSubject;
+import timber.log.Timber;
 
 /**
  * Created by cody on 9/22/15.
@@ -91,6 +93,7 @@ public class HermesBLE {
      */
     public static Observable<BleCharacteristicEvent> listen(BluetoothGatt gatt, String serviceUuid, String characteristicUuid) {
         Hermes.Dispatch.getObservable(BLEDispatch.services(gatt.getDevice()), BleServiceEvent.class)
+                .doOnNext(event -> Timber.d("Service discovered: %s", event.service.getUuid().toString()))
                 .subscribe(event -> {
                     if (event.service.getUuid().toString().equals(serviceUuid)) {
                         // Get a hold of the characteristic.
@@ -99,7 +102,6 @@ public class HermesBLE {
 
                         // We want to read from it.
                         event.gatt.setCharacteristicNotification(characteristic, true);
-                        event.gatt.readCharacteristic(characteristic);
 
                         // And receive events from it.
                         BluetoothGattDescriptor config = characteristic.getDescriptor(
@@ -109,6 +111,8 @@ public class HermesBLE {
                         event.gatt.writeDescriptor(config);
                     }
                 });
+
+        Timber.d("Are we discovering?");
 
         gatt.discoverServices();
 
@@ -125,6 +129,21 @@ public class HermesBLE {
     public static Observable<BleCharacteristicEvent> connectAndListen(BluetoothDevice device, String serviceUuid, String characteristicUuid) {
         return connect(device)
                 .filter(event -> event.type == BluetoothProfile.STATE_CONNECTED)
+                .doOnNext(event -> Timber.d("Connected."))
                 .flatMap(event -> listen(event.gatt, serviceUuid, characteristicUuid));
+    }
+
+    public static void close(BluetoothGatt gatt) {
+        if (gatt == null)
+            return;
+
+        // Clean Rx
+        Hermes.Dispatch.clean(BLEDispatch.characteristic(gatt.getDevice()));
+        Hermes.Dispatch.clean(BLEDispatch.connectionState(gatt.getDevice()));
+        Hermes.Dispatch.clean(BLEDispatch.descriptor(gatt.getDevice()));
+        Hermes.Dispatch.clean(BLEDispatch.services(gatt.getDevice()));
+
+        gatt.disconnect();
+        Timber.d("Disconnecting.");
     }
 }

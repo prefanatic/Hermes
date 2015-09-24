@@ -18,19 +18,26 @@ package edu.uri.egr.hermesble.service;
 
 import android.app.Service;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
+import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import edu.uri.egr.hermes.Hermes;
 import edu.uri.egr.hermesble.constant.BLEDispatch;
 import edu.uri.egr.hermesble.event.BleConnectionEvent;
 import edu.uri.egr.hermesble.factory.BluetoothGattCallbackFactory;
 import rx.Observable;
+import timber.log.Timber;
 
 public class BluetoothLeService extends Service {
     public static final String EXTRA_DEVICE = "bluetooth.le.device";
+    public static final Map<String, BluetoothGatt> mActiveGattServers = new HashMap<>();
 
     public static Observable<BleConnectionEvent> connect(Context context, BluetoothDevice device) {
         Intent intent = new Intent(context, BluetoothLeService.class);
@@ -56,10 +63,23 @@ public class BluetoothLeService extends Service {
             BluetoothDevice device = intent.getParcelableExtra(EXTRA_DEVICE);
             BluetoothGattCallback callback = BluetoothGattCallbackFactory.create(device);
 
-            device.connectGatt(this, false, callback);
-        }
+            BluetoothGatt gatt = device.connectGatt(this, false, callback);
 
-        return START_NOT_STICKY;
+            mActiveGattServers.put(device.getAddress(), gatt);
+            Hermes.Dispatch.getObservable(BLEDispatch.connectionState(device))
+                    .cast(BleConnectionEvent.class)
+                    .doOnCompleted(() -> {
+                        gatt.close();
+
+                        mActiveGattServers.remove(device.getAddress());
+                        if (mActiveGattServers.size() == 0) {
+                            Timber.d("Reached end of life.");
+                            stopSelf();
+                        }})
+                        .subscribe();
+                    }
+
+            return START_NOT_STICKY;
     }
 
     @Override

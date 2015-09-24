@@ -55,6 +55,14 @@ public class Dispatch {
         return (Subject<T, T>) subjectMap.get(key);
     }
 
+    public void clean(String key) {
+        Subject subject = subjectMap.get(key);
+        if (subject == null) return;
+
+        subject.onCompleted();
+        subjectMap.remove(key);
+    }
+
     public <T> Observable<T> getObservable(String key, Class<T> c) {
         return getObservable(key).cast(c);
     }

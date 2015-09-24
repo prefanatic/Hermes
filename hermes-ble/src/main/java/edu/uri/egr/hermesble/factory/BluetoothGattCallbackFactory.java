@@ -51,11 +51,6 @@ public class BluetoothGattCallbackFactory {
                 Timber.d("Connection state changed - from %d to %d", status, newState);
                 Hermes.Dispatch.getSubject(SUBJECT_CONNECTION)
                         .onNext(new BleConnectionEvent(newState, gatt));
-
-                if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                    Hermes.Dispatch.getSubject(SUBJECT_CONNECTION)
-                            .onCompleted();
-                }
             }
 
             @Override
