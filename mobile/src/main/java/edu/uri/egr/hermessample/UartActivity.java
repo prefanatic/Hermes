@@ -17,28 +17,29 @@
 package edu.uri.egr.hermessample;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
 
-import edu.uri.egr.hermes.Hermes;
-import edu.uri.egr.hermesble.HermesBLE;
-import edu.uri.egr.hermesble.attributes.BLStandardAttributes;
-import edu.uri.egr.hermesble.attributes.RBLGattAttributes;
-import edu.uri.egr.hermesble.ui.BLESelectionDialog;
-
-public class UartSampleActivity extends AppCompatActivity {
-    private Hermes hermes = Hermes.get();
+public class UartActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_uart);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        BLESelectionDialog dialog = new BLESelectionDialog();
-        dialog.getObservable()
-                .subscribe(device -> {
-                    HermesBLE.connectAndListen(device, BLStandardAttributes.SERVICE_HEART_RATE, BLStandardAttributes.CHAR_HEART_RATE_MEASUREMENT);
-                });
-
-        dialog.show(getFragmentManager(), "dialog");
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
     }
+
 }

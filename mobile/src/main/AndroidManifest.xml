@@ -10,23 +10,33 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
-            android:label="@string/title_activity_main" >
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".UartSampleActivity"/>
+        <activity android:name=".HeartRateActivity"
+                  android:theme="@style/AppTheme.NoActionBar"/>
 
         <service
             android:name=".AudioReceiverService"
             android:enabled="true"
             android:exported="true" >
             <intent-filter>
-                <action android:name="hermes.intent.action.WEARABLE_DISPATCH"/>
-                <category android:name="channel.opened"/>
+                <action android:name="hermes.intent.action.WEARABLE_DISPATCH" />
+
+                <category android:name="channel.opened" />
             </intent-filter>
         </service>
+
+        <activity
+            android:name=".UartActivity"
+            android:label="@string/title_activity_uart"
+            android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
     </application>
 
 </manifest>
