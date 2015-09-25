@@ -6,6 +6,28 @@ ext {
     kotlin_version = "0.13.1513"
     googlePlay = "7.8.0"
     appCompat = "23.0.1"
+
+    bintrayRepo = 'maven'
+    bintrayName = 'hermes-core'
+
+    publishedGroupId = 'com.github.prefanatic.hermes'
+    libraryName = 'Hermes'
+    artifact = 'hermes-core'
+
+    libraryDescription = 'Hermes'
+
+    siteUrl = 'https://github.com/prefanatic/Hermes'
+    gitUrl = 'https://github.com/prefanatic/Hermes.git'
+
+    libraryVersion = '1.0'
+
+    developerId = 'prefanatic'
+    developerName = 'Cody Goldberg'
+    developerEmail = 'joncgoldberg@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
 }
 
 group = 'com.github.prefanatic'
@@ -35,7 +57,7 @@ buildscript {
         // Java 8 Support
         classpath 'me.tatarka:gradle-retrolambda:3.2+'
 
-        // JitPack Support
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.3'
 
         classpath 'org.ajoberstar:grgit:1.4.+'

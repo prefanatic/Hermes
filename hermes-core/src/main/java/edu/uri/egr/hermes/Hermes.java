@@ -19,6 +19,7 @@ package edu.uri.egr.hermes;
 import android.content.Context;
 import android.os.Debug;
 import android.os.Environment;
+import android.support.v4.BuildConfig;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.Api;
@@ -114,6 +115,11 @@ public class Hermes {
     }
 
     private void createGoogleClient() {
+        if (config.apis.size() == 0) {
+            Timber.w("No GoogleAPIs set in Hermes.Config.  Not creating GoogleApiClient.");
+            return;
+        }
+
         new Thread(() -> {
             long startTime = System.currentTimeMillis();
 
