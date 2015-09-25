@@ -17,6 +17,10 @@
 apply plugin: 'com.android.library'
 apply plugin: 'me.tatarka.retrolambda'
 
+ext {
+    artifact = 'hermes-ble'
+}
+
 android {
     compileSdkVersion 23
     buildToolsVersion = project.toolsVersion
@@ -25,7 +29,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 23
         versionCode = gitCommitCount()
-        versionName "1.0"
+        versionName = project.libraryVersion
     }
     buildTypes {
         release {
@@ -47,3 +51,6 @@ dependencies {
     compile "com.android.support:recyclerview-v7:$project.appCompat"
     compile 'com.jakewharton.rxbinding:rxbinding:0.2.0'
 }
+
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'

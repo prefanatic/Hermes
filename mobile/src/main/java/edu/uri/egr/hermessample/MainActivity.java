@@ -2,19 +2,38 @@ package edu.uri.egr.hermessample;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import edu.uri.egr.hermessample.adapter.Sample;
+import edu.uri.egr.hermessample.adapter.SampleAdapter;
+import edu.uri.egr.hermessample.samples.HeartRateActivity;
+import edu.uri.egr.hermessample.samples.UartActivity;
 import rx.Subscription;
 
 public class MainActivity extends AppCompatActivity {
-    private Subscription mSubscription;
+    @Bind(R.id.recycler) RecyclerView mRecycler;
+    @Bind(R.id.toolbar) Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
+        setSupportActionBar(mToolbar);
+
+        SampleAdapter adapter = new SampleAdapter();
+        adapter.addSample(new Sample(HeartRateActivity.class, "Heart Rate Activity", "Receive a heart rate through a bluetooth device."));
+        adapter.addSample(new Sample(UartActivity.class, "UART Activity", "Receive data through a UART channel from a bluetooth device."));
+
+        mRecycler.setAdapter(adapter);
+        mRecycler.setLayoutManager(new LinearLayoutManager(this));
     }
 
     @Override

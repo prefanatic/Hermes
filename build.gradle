@@ -8,18 +8,17 @@ ext {
     appCompat = "23.0.1"
 
     bintrayRepo = 'maven'
-    bintrayName = 'hermes-core'
+    bintrayName = 'hermes'
 
     publishedGroupId = 'com.github.prefanatic.hermes'
     libraryName = 'Hermes'
-    artifact = 'hermes-core'
 
     libraryDescription = 'Hermes'
 
     siteUrl = 'https://github.com/prefanatic/Hermes'
     gitUrl = 'https://github.com/prefanatic/Hermes.git'
 
-    libraryVersion = '1.0'
+    libraryVersion = '0.3.0'
 
     developerId = 'prefanatic'
     developerName = 'Cody Goldberg'

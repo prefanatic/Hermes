@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package edu.uri.egr.hermessample;
+package edu.uri.egr.hermessample.samples;
 
 import android.bluetooth.BluetoothGatt;
 import android.graphics.drawable.VectorDrawable;
@@ -33,6 +33,7 @@ import butterknife.ButterKnife;
 import edu.uri.egr.hermesble.HermesBLE;
 import edu.uri.egr.hermesble.attributes.BLStandardAttributes;
 import edu.uri.egr.hermesble.ui.BLESelectionDialog;
+import edu.uri.egr.hermessample.R;
 import rx.Subscription;
 import timber.log.Timber;
 

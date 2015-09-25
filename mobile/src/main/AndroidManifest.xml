@@ -18,11 +18,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".HeartRateActivity"
+        <activity android:name=".samples.HeartRateActivity"
                   android:theme="@style/AppTheme.NoActionBar"/>
 
         <service
-            android:name=".AudioReceiverService"
+            android:name=".samples.AudioReceiverService"
             android:enabled="true"
             android:exported="true" >
             <intent-filter>
@@ -33,7 +33,7 @@
         </service>
 
         <activity
-            android:name=".UartActivity"
+            android:name=".samples.UartActivity"
             android:label="@string/title_activity_uart"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>

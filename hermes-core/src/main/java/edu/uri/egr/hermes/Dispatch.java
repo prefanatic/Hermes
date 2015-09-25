@@ -18,7 +18,6 @@ package edu.uri.egr.hermes;
 
 import android.support.v4.util.SimpleArrayMap;
 
-import edu.uri.egr.hermes.Hermes;
 import edu.uri.egr.hermes.services.AbstractAudioRecordingService;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
