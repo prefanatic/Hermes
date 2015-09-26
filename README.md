@@ -11,10 +11,17 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Hermes.init(this);
+        
+        Hermes.Config config = new Hermes.Config()
+            .addApi(***)
+            .setRootFolder(***);
+            
+        Hermes.init(this, config);
     }
 }
 ```
+
+Feel free to configure Hermes as you'd like.  You can add GoogleAPI's to Hermes.Config for it to init for you.
 
 
 To access Hermes anywhere:
@@ -28,11 +35,15 @@ Download
 In your build.gradle:
 ```groovy
 repositories {
-    maven { url "https://jitpack.io" }
+    jcenter()
 }
 
-compile 'TODO'
+compile 'com.github.prefanatic.hermes:hermes-core:0.3.0'
+compile 'com.github.prefanatic.hermes:hermes-ble:0.3.0'
+compile 'com.github.prefanatic.hermes:hermes-wear:0.3.0'
 ```
+
+You need not install all modules.  If you're only looking for BLE support, install hermes-ble -> applies to all.
 
 
 License
