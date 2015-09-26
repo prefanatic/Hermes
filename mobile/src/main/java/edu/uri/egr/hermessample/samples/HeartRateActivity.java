@@ -79,6 +79,9 @@ public class HeartRateActivity extends AppCompatActivity {
                 // Lets take out the BluetoothGatt from this event and save it.  We'll need it to clean up later.
                 .doOnNext(event -> mGatt = event.gatt)
 
+                // We also should change the color of our heart if we get a solid connection!
+                .doOnNext(event -> mHeart.setColorFilter(COLOR_HEART))
+
                 // Now that we're connected, we'll be getting events every time what we've subscribed to
                 // changes.  To keep things clean, we've supplied a HeartRateEvaluator that handles the
                 // byte conversion for you.  Just map it in the same way you mapped connectAndListen.

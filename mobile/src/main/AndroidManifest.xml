@@ -22,7 +22,7 @@
                   android:theme="@style/AppTheme.NoActionBar"/>
 
         <service
-            android:name=".AudioReceiverService"
+            android:name=".samples.AudioReceiverService"
             android:enabled="true"
             android:exported="true" >
             <intent-filter>

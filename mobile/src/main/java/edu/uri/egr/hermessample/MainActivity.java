@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import edu.uri.egr.hermessample.adapter.Sample;
+import edu.uri.egr.hermessample.adapter.SampleAdapter;
 import edu.uri.egr.hermessample.samples.HeartRateActivity;
 import edu.uri.egr.hermessample.samples.UartActivity;
 

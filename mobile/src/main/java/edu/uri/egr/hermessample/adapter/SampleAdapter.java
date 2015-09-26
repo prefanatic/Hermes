@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package edu.uri.egr.hermessample;
+package edu.uri.egr.hermessample.adapter;
 
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -28,7 +28,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import edu.uri.egr.hermessample.adapter.Sample;
+import edu.uri.egr.hermessample.R;
 
 /**
  * Created by cody on 9/25/15.

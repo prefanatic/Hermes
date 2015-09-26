@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package edu.uri.egr.hermessample;
+package edu.uri.egr.hermessample.samples;
 
 import android.app.IntentService;
 import android.content.Intent;
