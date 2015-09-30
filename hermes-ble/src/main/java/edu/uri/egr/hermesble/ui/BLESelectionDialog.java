@@ -57,15 +57,15 @@ public class BLESelectionDialog extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.dialog_bluetooth_selection, null);
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_bluetooth_selection, null);
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler);
         mProgressBar = (ProgressBar) view.findViewById(R.id.progressbar);
 
         mAdapter = new BLEDeviceAdapter();
         recyclerView.setAdapter(mAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
                 .setTitle(R.string.ble_search_title)
                 .setNeutralButton(R.string.ble_search_cancel, (dialog, which) -> dialog.cancel())
                 .setPositiveButton(R.string.ble_search_continue, (dialog, which) -> {
