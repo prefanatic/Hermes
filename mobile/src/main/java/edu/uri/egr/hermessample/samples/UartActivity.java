@@ -17,19 +17,17 @@
 package edu.uri.egr.hermessample.samples;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 
-import edu.uri.egr.hermes.Hermes;
+import butterknife.Bind;
 import edu.uri.egr.hermesble.HermesBLE;
 import edu.uri.egr.hermesble.ui.BLESelectionDialog;
 import edu.uri.egr.hermessample.R;
+import edu.uri.egr.hermesui.activity.HermesActivity;
 import timber.log.Timber;
 
-public class UartActivity extends AppCompatActivity {
+public class UartActivity extends HermesActivity {
+    @Bind(R.id.toolbar) Toolbar mToolbar;
 
     public static final String SERVICE_UART = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
     public static final String CHAR_TX = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
@@ -39,9 +37,7 @@ public class UartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_uart);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
+        setSupportActionBar(mToolbar);
 
         BLESelectionDialog dialog = new BLESelectionDialog();
         dialog.getObservable()

@@ -14,8 +14,9 @@ import edu.uri.egr.hermessample.adapter.Sample;
 import edu.uri.egr.hermessample.adapter.SampleAdapter;
 import edu.uri.egr.hermessample.samples.HeartRateActivity;
 import edu.uri.egr.hermessample.samples.UartActivity;
+import edu.uri.egr.hermesui.activity.HermesActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends HermesActivity {
     @Bind(R.id.recycler) RecyclerView mRecycler;
     @Bind(R.id.toolbar) Toolbar mToolbar;
 
@@ -23,7 +24,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
 
         setSupportActionBar(mToolbar);
 

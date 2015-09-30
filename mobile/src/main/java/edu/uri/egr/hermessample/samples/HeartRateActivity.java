@@ -35,10 +35,11 @@ import edu.uri.egr.hermesble.attributes.BLStandardAttributes;
 import edu.uri.egr.hermesble.evaluator.HeartRateEvaluator;
 import edu.uri.egr.hermesble.ui.BLESelectionDialog;
 import edu.uri.egr.hermessample.R;
+import edu.uri.egr.hermesui.activity.HermesActivity;
 import rx.Subscription;
 import timber.log.Timber;
 
-public class HeartRateActivity extends AppCompatActivity {
+public class HeartRateActivity extends HermesActivity {
 
     // We need to bind our views so we can access them.
     @Bind(R.id.toolbar) Toolbar mToolbar;
@@ -60,8 +61,6 @@ public class HeartRateActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState); // Call super, we must do this because it handles a lot of nice things for us.
         setContentView(R.layout.activity_heartrate); // Set our content view for what we want to show on screen.
-        ButterKnife.bind(this); // Bind ButterKnife - this allows us to bind the views above.
-
         setSupportActionBar(mToolbar); // Set our toolbar to the one we designated in the layout.
 
         // Create a new device selection dialog.
