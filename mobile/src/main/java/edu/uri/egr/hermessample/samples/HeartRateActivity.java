@@ -73,7 +73,9 @@ public class HeartRateActivity extends AppCompatActivity {
                 // We then want to "map" this observable to a different one.
                 // HermesBLE.connectAndListen outputs a different observable.  So, once we get to this point,
                 // we're passing our device we select in the dialog, on to HermesBLE for the connecting.
-                .flatMap(device -> HermesBLE.connectAndListen(device, BLStandardAttributes.SERVICE_HEART_RATE, BLStandardAttributes.CHAR_HEART_RATE_MEASUREMENT))
+                .flatMap(device -> HermesBLE.connectAndListen(device,
+                        BLStandardAttributes.SERVICE_HEART_RATE,
+                        BLStandardAttributes.CHAR_HEART_RATE_MEASUREMENT))
 
                 // After the above runs, we'll be connected.  So, the first "event" we get will be a success.
                 // Lets take out the BluetoothGatt from this event and save it.  We'll need it to clean up later.

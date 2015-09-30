@@ -23,9 +23,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import edu.uri.egr.hermes.Hermes;
+import edu.uri.egr.hermesble.HermesBLE;
+import edu.uri.egr.hermesble.ui.BLESelectionDialog;
 import edu.uri.egr.hermessample.R;
+import timber.log.Timber;
 
 public class UartActivity extends AppCompatActivity {
+
+    public static final String SERVICE_UART = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+    public static final String CHAR_TX = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
+    public static final String CHAR_RX = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +42,16 @@ public class UartActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+
+        BLESelectionDialog dialog = new BLESelectionDialog();
+        dialog.getObservable()
+                .flatMap(device -> HermesBLE.connectAndListen(device, SERVICE_UART, CHAR_RX))
+                .subscribe(event -> {
+                    Timber.d("Received %d bytes", event.characteristic.getValue().length);
+                });
+
+        dialog.show(getFragmentManager(), "devicePicker");
     }
+
 
 }

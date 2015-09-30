@@ -94,6 +94,11 @@ public class HermesBLE {
     public static Observable<BleCharacteristicEvent> listen(BluetoothGatt gatt, String serviceUuid, String characteristicUuid) {
         Hermes.Dispatch.getObservable(BLEDispatch.services(gatt.getDevice()), BleServiceEvent.class)
                 .doOnNext(event -> Timber.d("Service discovered: %s", event.service.getUuid().toString()))
+                .doOnNext(event -> {
+                    Timber.d("Characteristics: ");
+                    for (BluetoothGattCharacteristic characteristic : event.service.getCharacteristics())
+                        Timber.d(characteristic.getUuid().toString());
+                })
                 .subscribe(event -> {
                     if (event.service.getUuid().toString().equals(serviceUuid)) {
                         // Get a hold of the characteristic.
