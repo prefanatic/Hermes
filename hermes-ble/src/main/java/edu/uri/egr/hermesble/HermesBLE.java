@@ -36,7 +36,6 @@ import edu.uri.egr.hermesble.event.BleConnectionEvent;
 import edu.uri.egr.hermesble.event.BleServiceEvent;
 import edu.uri.egr.hermesble.service.BluetoothLeService;
 import rx.Observable;
-import rx.functions.Action0;
 import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
@@ -53,6 +52,7 @@ public class HermesBLE {
 
     /**
      * Locates all BLE devices.
+     *
      * @param scanPeriod Length in seconds to scan for.
      * @return Observable of BluetoothDevice found.
      */
@@ -76,6 +76,7 @@ public class HermesBLE {
 
     /**
      * Connect to a specific BluetoothDevice.
+     *
      * @param device A BluetoothDevice to connect to.
      * @return Observable of BleConnectionEvent.
      */
@@ -86,8 +87,9 @@ public class HermesBLE {
 
     /**
      * Listen to a specific notification under a Bluetooth service.
-     * @param gatt BluetoothGatt object that resides with the BluetoothDevice.
-     * @param serviceUuid String of Bluetooth service used.
+     *
+     * @param gatt               BluetoothGatt object that resides with the BluetoothDevice.
+     * @param serviceUuid        String of Bluetooth service used.
      * @param characteristicUuid String of Bluetooth characteristic to listen to.
      * @return Observable of BleCharacteristicEvent.
      */
@@ -126,8 +128,9 @@ public class HermesBLE {
 
     /**
      * Connects and then proceeds to listen to a notification.
-     * @param device BluetoothDevice to connect to.
-     * @param serviceUuid Bluetooth service.
+     *
+     * @param device             BluetoothDevice to connect to.
+     * @param serviceUuid        Bluetooth service.
      * @param characteristicUuid Bluetooth characteristic.
      * @return Observable of BleCharacteristicEvent
      */

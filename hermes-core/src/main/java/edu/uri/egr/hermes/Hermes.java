@@ -17,7 +17,6 @@
 package edu.uri.egr.hermes;
 
 import android.content.Context;
-import android.os.Debug;
 import android.os.Environment;
 import android.support.v4.BuildConfig;
 
