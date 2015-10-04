@@ -28,6 +28,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.uri.egr.hermes.callbacks.HermesExceptionCallback;
 import edu.uri.egr.hermes.exceptions.HermesException;
 import edu.uri.egr.hermes.exceptions.RxGoogleApiException;
 import rx.Observable;
@@ -98,6 +99,12 @@ public class Hermes {
         return mRootFolder;
     }
 
+    public void exception(Exception e) {
+        if (config.exceptionCallback != null)
+            config.exceptionCallback.onException(e);
+        Timber.e(e.getMessage());
+    }
+
     /*
         -- Google API Client Methods
      */
@@ -155,6 +162,7 @@ public class Hermes {
     public static final class Config {
         public List<Api> apis = new ArrayList<>();
         public java.io.File baseFolder;
+        public HermesExceptionCallback exceptionCallback;
 
         public Config addApi(Api api) {
             apis.add(api);
@@ -163,6 +171,11 @@ public class Hermes {
 
         public Config setBaseFolder(java.io.File folder) {
             baseFolder = folder;
+            return this;
+        }
+
+        public Config setExceptionCallback(HermesExceptionCallback callback) {
+            exceptionCallback = callback;
             return this;
         }
     }
