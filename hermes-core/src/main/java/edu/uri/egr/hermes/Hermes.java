@@ -58,8 +58,9 @@ public class Hermes {
         this.context = context;
         this.config = config;
 
-        // Plant Timber regardless of being debug or not.
-        Timber.plant(new Timber.DebugTree());
+        // Plant timber if we request debug.
+        if (config.debug)
+            Timber.plant(new Timber.DebugTree());
 
         // Connect to Google.
         createGoogleClient();
@@ -162,6 +163,7 @@ public class Hermes {
         public List<Api> apis = new ArrayList<>();
         public java.io.File baseFolder;
         public HermesExceptionCallback exceptionCallback;
+        public boolean debug;
 
         public Config addApi(Api api) {
             apis.add(api);
@@ -175,6 +177,11 @@ public class Hermes {
 
         public Config setExceptionCallback(HermesExceptionCallback callback) {
             exceptionCallback = callback;
+            return this;
+        }
+
+        public Config enableDebug(boolean b) {
+            debug = b;
             return this;
         }
     }
