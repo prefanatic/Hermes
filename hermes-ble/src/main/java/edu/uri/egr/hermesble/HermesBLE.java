@@ -36,6 +36,7 @@ import edu.uri.egr.hermesble.event.BleConnectionEvent;
 import edu.uri.egr.hermesble.event.BleServiceEvent;
 import edu.uri.egr.hermesble.service.BluetoothLeService;
 import rx.Observable;
+import rx.functions.Func1;
 import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
@@ -83,6 +84,30 @@ public class HermesBLE {
     public static Observable<BleConnectionEvent> connect(BluetoothDevice device) {
         // TODO: 9/23/2015 Throw Observable error if we cannot connect.
         return BluetoothLeService.connect(hermes.getContext(), device);
+    }
+
+    /**
+     * Write to a characteristic of a BluetoothGatt.
+     * @param gatt BluetoothGatt to write to.
+     * @param serviceUuid Service UUID to write to.
+     * @param characteristicUuid Characteristic to write to.
+     * @param data Data in byte[] to write.
+     * @return Observable of BleCharacteristicEvent
+     */
+    public static Observable<BleCharacteristicEvent> write(BluetoothGatt gatt, String serviceUuid, String characteristicUuid, byte[] data) {
+        Observable<BleCharacteristicEvent> observable = Observable.create(subscriber -> {
+            Hermes.Dispatch.getObservable(BLEDispatch.services(gatt.getDevice()), BleServiceEvent.class)
+                    .filter(event -> event.service.getUuid().toString().equals(serviceUuid))
+                    .doOnNext(event -> {
+                        BluetoothGattCharacteristic characteristic =
+                                event.service.getCharacteristic(UUID.fromString(characteristicUuid));
+
+                        characteristic.setValue(data);
+                    })
+                    .flatMap(bleServiceEvent -> Hermes.Dispatch.getObservable(BLEDispatch.characteristic(bleServiceEvent.gatt.getDevice())));
+        });
+
+        return observable;
     }
 
     /**
