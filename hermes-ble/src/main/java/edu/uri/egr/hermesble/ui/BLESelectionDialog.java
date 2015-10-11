@@ -112,6 +112,7 @@ public class BLESelectionDialog extends DialogFragment {
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
 
+        mDeviceSubject.onCompleted();
         mSubscription.unsubscribe();
     }
 }
