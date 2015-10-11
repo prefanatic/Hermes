@@ -21,6 +21,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
+import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 
 import java.util.ArrayList;
@@ -36,7 +37,6 @@ import edu.uri.egr.hermesble.event.BleConnectionEvent;
 import edu.uri.egr.hermesble.event.BleServiceEvent;
 import edu.uri.egr.hermesble.service.BluetoothLeService;
 import rx.Observable;
-import rx.functions.Func1;
 import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
@@ -86,28 +86,50 @@ public class HermesBLE {
         return BluetoothLeService.connect(hermes.getContext(), device);
     }
 
+    public static Observable<BleServiceEvent> getServices(BluetoothGatt gatt) {
+        Observable<BleServiceEvent> observable;
+
+        if (gatt.getServices() == null || gatt.getServices().size() == 0) {
+            gatt.discoverServices();
+
+            observable = Hermes.Dispatch.getObservable(BLEDispatch.services(gatt.getDevice()), BleServiceEvent.class);
+        } else {
+            observable = Observable.create(subscriber -> {
+                for (BluetoothGattService service : gatt.getServices())
+                    subscriber.onNext(new BleServiceEvent(gatt, service));
+
+                subscriber.onCompleted();
+            });
+        }
+
+        return observable.doOnNext(event -> Timber.d("Service discovered: %s", event.service.getUuid().toString()))
+                .doOnNext(event -> {
+                    Timber.d("Characteristics: ");
+                    for (BluetoothGattCharacteristic characteristic : event.service.getCharacteristics())
+                        Timber.d(characteristic.getUuid().toString());
+                });
+    }
+
     /**
      * Write to a characteristic of a BluetoothGatt.
-     * @param gatt BluetoothGatt to write to.
-     * @param serviceUuid Service UUID to write to.
+     *
+     * @param gatt               BluetoothGatt to write to.
+     * @param serviceUuid        Service UUID to write to.
      * @param characteristicUuid Characteristic to write to.
-     * @param data Data in byte[] to write.
-     * @return Observable of BleCharacteristicEvent
+     * @param data               Data in byte[] to write.
      */
-    public static Observable<BleCharacteristicEvent> write(BluetoothGatt gatt, String serviceUuid, String characteristicUuid, byte[] data) {
-        Observable<BleCharacteristicEvent> observable = Observable.create(subscriber -> {
-            Hermes.Dispatch.getObservable(BLEDispatch.services(gatt.getDevice()), BleServiceEvent.class)
-                    .filter(event -> event.service.getUuid().toString().equals(serviceUuid))
-                    .doOnNext(event -> {
-                        BluetoothGattCharacteristic characteristic =
-                                event.service.getCharacteristic(UUID.fromString(characteristicUuid));
+    public static void write(BluetoothGatt gatt, String serviceUuid, String characteristicUuid, byte[] data) {
+        getServices(gatt)
+                .filter(event -> event.service.getUuid().toString().equals(serviceUuid))
+                .doOnNext(event -> {
+                    Timber.d("Writing.");
 
-                        characteristic.setValue(data);
-                    })
-                    .flatMap(bleServiceEvent -> Hermes.Dispatch.getObservable(BLEDispatch.characteristic(bleServiceEvent.gatt.getDevice())));
-        });
+                    BluetoothGattCharacteristic characteristic =
+                            event.service.getCharacteristic(UUID.fromString(characteristicUuid));
 
-        return observable;
+                    characteristic.setValue(data);
+                    gatt.writeCharacteristic(characteristic);
+                }).subscribe();
     }
 
     /**
@@ -119,36 +141,24 @@ public class HermesBLE {
      * @return Observable of BleCharacteristicEvent.
      */
     public static Observable<BleCharacteristicEvent> listen(BluetoothGatt gatt, String serviceUuid, String characteristicUuid) {
-        Hermes.Dispatch.getObservable(BLEDispatch.services(gatt.getDevice()), BleServiceEvent.class)
-                .doOnNext(event -> Timber.d("Service discovered: %s", event.service.getUuid().toString()))
+        return getServices(gatt)
+                .filter(event -> event.service.getUuid().toString().equals(serviceUuid))
                 .doOnNext(event -> {
-                    Timber.d("Characteristics: ");
-                    for (BluetoothGattCharacteristic characteristic : event.service.getCharacteristics())
-                        Timber.d(characteristic.getUuid().toString());
+                    // Get a hold of the characteristic.
+                    BluetoothGattCharacteristic characteristic =
+                            event.service.getCharacteristic(UUID.fromString(characteristicUuid));
+
+                    // We want to read from it.
+                    event.gatt.setCharacteristicNotification(characteristic, true);
+
+                    // And receive events from it.
+                    BluetoothGattDescriptor config = characteristic.getDescriptor(
+                            UUID.fromString(BLStandardAttributes.DESC_CLIENT_CHARACTERISTIC_CONFIG));
+                    config.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+
+                    event.gatt.writeDescriptor(config);
                 })
-                .subscribe(event -> {
-                    if (event.service.getUuid().toString().equals(serviceUuid)) {
-                        // Get a hold of the characteristic.
-                        BluetoothGattCharacteristic characteristic =
-                                event.service.getCharacteristic(UUID.fromString(characteristicUuid));
-
-                        // We want to read from it.
-                        event.gatt.setCharacteristicNotification(characteristic, true);
-
-                        // And receive events from it.
-                        BluetoothGattDescriptor config = characteristic.getDescriptor(
-                                UUID.fromString(BLStandardAttributes.DESC_CLIENT_CHARACTERISTIC_CONFIG));
-                        config.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-
-                        event.gatt.writeDescriptor(config);
-                    }
-                });
-
-        Timber.d("Are we discovering?");
-
-        gatt.discoverServices();
-
-        return Hermes.Dispatch.getObservable(BLEDispatch.characteristic(gatt.getDevice()));
+                .flatMap(event -> Hermes.Dispatch.getObservable(BLEDispatch.characteristic(gatt.getDevice())));
     }
 
     /**
