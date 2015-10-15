@@ -16,22 +16,34 @@
 
 package edu.uri.egr.hermessample.samples;
 
+import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothProfile;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
 import butterknife.Bind;
+import butterknife.OnClick;
 import edu.uri.egr.hermesble.HermesBLE;
+import edu.uri.egr.hermesble.attributes.RBLGattAttributes;
+import edu.uri.egr.hermesble.event.BleConnectionEvent;
 import edu.uri.egr.hermesble.ui.BLESelectionDialog;
 import edu.uri.egr.hermessample.R;
 import edu.uri.egr.hermesui.activity.HermesActivity;
+import rx.Subscription;
 import timber.log.Timber;
 
 public class UartActivity extends HermesActivity {
     @Bind(R.id.toolbar) Toolbar mToolbar;
 
-    public static final String SERVICE_UART = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
-    public static final String CHAR_TX = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
-    public static final String CHAR_RX = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
+    private BluetoothGatt mGatt;
+    private Subscription mSubscription;
+
+    private boolean trigger = false;
+
+    @OnClick(R.id.test)
+    public void test() {
+        onConnected();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,14 +52,33 @@ public class UartActivity extends HermesActivity {
         setSupportActionBar(mToolbar);
 
         BLESelectionDialog dialog = new BLESelectionDialog();
-        dialog.getObservable()
-                .flatMap(device -> HermesBLE.connectAndListen(device, SERVICE_UART, CHAR_RX))
-                .subscribe(event -> {
-                    Timber.d("Received %d bytes", event.characteristic.getValue().length);
-                });
+        mSubscription = dialog.getObservable()
+                .doOnCompleted(this::finish)
+                .flatMap(HermesBLE::connect)
+                .filter(event -> event.type == BluetoothProfile.STATE_CONNECTED)
+                .doOnNext(event -> mGatt = event.gatt)
+                .flatMap(event -> HermesBLE.listen(event.gatt, RBLGattAttributes.BLE_SHIELD_SERVICE, RBLGattAttributes.BLE_SHIELD_RX))
+                .subscribe();
 
         dialog.show(getFragmentManager(), "devicePicker");
     }
 
 
+    private void onConnected() {
+        byte[] data = new byte[] {(byte) 0x01, (byte) 0x00, (byte) 0x00};
+        if (trigger) {
+            data[1] = 0x01;
+        }
+        trigger = !trigger;
+
+        HermesBLE.write(mGatt, RBLGattAttributes.BLE_SHIELD_SERVICE, RBLGattAttributes.BLE_SHIELD_TX, data);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        HermesBLE.close(mGatt); // Have Hermes handle closing out our bluetooth connection for us.
+        mSubscription.unsubscribe();
+    }
 }

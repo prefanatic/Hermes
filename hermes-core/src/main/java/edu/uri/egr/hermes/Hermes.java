@@ -53,6 +53,7 @@ public class Hermes {
     // Children Classes
     public static final File File = new File();
     public static final Dispatch Dispatch = new Dispatch();
+    public static final Sensor Sensor = new Sensor();
 
     private Hermes(Context context, Config config) {
         this.context = context;

@@ -16,6 +16,7 @@
 
 package edu.uri.egr.hermessample.samples;
 
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.graphics.drawable.VectorDrawable;
 import android.os.Bundle;
@@ -37,6 +38,7 @@ import edu.uri.egr.hermesble.ui.BLESelectionDialog;
 import edu.uri.egr.hermessample.R;
 import edu.uri.egr.hermesui.activity.HermesActivity;
 import rx.Subscription;
+import rx.functions.Action1;
 import timber.log.Timber;
 
 public class HeartRateActivity extends HermesActivity {

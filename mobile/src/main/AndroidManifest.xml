@@ -20,6 +20,7 @@
         </activity>
         <activity android:name=".samples.HeartRateActivity"
                   android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".samples.RxSensorActivity"/>
 
         <service
             android:name=".samples.AudioReceiverService"

@@ -15,6 +15,7 @@ public class SampleApplication extends Application {
         super.onCreate();
 
         Hermes.Config config = new Hermes.Config()
+                .enableDebug(true)
                 .addApi(Wearable.API);
 
         Hermes.init(this, config);
