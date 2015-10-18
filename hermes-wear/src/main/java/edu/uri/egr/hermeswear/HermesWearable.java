@@ -25,6 +25,8 @@ import edu.uri.egr.hermeswear.event.ChannelEvent;
 import edu.uri.egr.hermeswear.event.InputClosedEvent;
 import edu.uri.egr.hermeswear.event.OutputClosedEvent;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by cody on 9/22/15.
@@ -70,11 +72,17 @@ public class HermesWearable {
     }
 
     public static Observable<Node> getPeerConnected() {
-        return Hermes.Dispatch.getObservable(SUBJECT_PEER_CONNECTED);
+        return Hermes.Dispatch.getObservable(SUBJECT_PEER_CONNECTED)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .cast(Node.class);
     }
 
     public static Observable<Node> getPeerDisconnected() {
-        return Hermes.Dispatch.getObservable(SUBJECT_PEER_DISCONNECTED);
+        return Hermes.Dispatch.getObservable(SUBJECT_PEER_DISCONNECTED)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .cast(Node.class);
     }
 
     static GoogleApiClient getClientBlocking() {

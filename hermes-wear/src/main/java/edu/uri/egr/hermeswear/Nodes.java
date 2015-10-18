@@ -23,9 +23,12 @@ import com.google.android.gms.wearable.Wearable;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.uri.egr.hermes.Hermes;
 import edu.uri.egr.hermes.exceptions.HermesException;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.exceptions.OnErrorThrowable;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by cody on 9/22/15.
@@ -43,15 +46,17 @@ public class Nodes {
             return Observable.just(mConnectedNodes)
                     .flatMap(Observable::from);
 
-        return Observable.defer(() -> {
-            NodeApi.GetConnectedNodesResult result = Wearable.NodeApi.getConnectedNodes(HermesWearable.getClientBlocking()).await();
-            if (result.getStatus().isSuccess())
-                return Observable.just(result.getNodes())
-                        .flatMap(Observable::from)
-                        .filter(Node::isNearby)
-                        .doOnNext(mConnectedNodes::add);
-
-            throw OnErrorThrowable.from(new HermesException("Node result is null from NodeApi."));
-        });
+        return Hermes.get().getGoogleClientObservable()
+                .map(googleApiClient -> {
+                    NodeApi.GetConnectedNodesResult result = Wearable.NodeApi.getConnectedNodes(googleApiClient).await();
+                    if (result.getStatus().isSuccess())
+                        return result.getNodes();
+                    throw OnErrorThrowable.from(new HermesException("Node result is null from NodeApi."));
+                })
+                .flatMap(Observable::from)
+                .filter(Node::isNearby)
+                .doOnNext(mConnectedNodes::add)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 }

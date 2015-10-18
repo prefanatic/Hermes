@@ -18,7 +18,7 @@ ext {
     siteUrl = 'https://github.com/prefanatic/Hermes'
     gitUrl = 'https://github.com/prefanatic/Hermes.git'
 
-    libraryVersion = '0.3.4'
+    libraryVersion = '0.3.6'
 
     developerId = 'prefanatic'
     developerName = 'Cody Goldberg'
@@ -31,18 +31,6 @@ ext {
 
 group = 'com.github.prefanatic'
 version = '1.0'
-
-/*
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            def repoUrl = getSdkDir() + "/extras/android/m2repository"
-
-            repository(url: "file:///$repoUrl")
-        }
-    }
-}
-*/
 
 buildscript {
     ext.kotlin_version = "0.13.1513"

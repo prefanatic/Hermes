@@ -13,6 +13,7 @@ import butterknife.ButterKnife;
 import edu.uri.egr.hermessample.adapter.Sample;
 import edu.uri.egr.hermessample.adapter.SampleAdapter;
 import edu.uri.egr.hermessample.samples.HeartRateActivity;
+import edu.uri.egr.hermessample.samples.NodeListActivity;
 import edu.uri.egr.hermessample.samples.RxSensorActivity;
 import edu.uri.egr.hermessample.samples.UartActivity;
 import edu.uri.egr.hermesui.activity.HermesActivity;
@@ -32,6 +33,7 @@ public class MainActivity extends HermesActivity {
         adapter.addSample(new Sample(HeartRateActivity.class, "Heart Rate Activity", "Receive a heart rate through a bluetooth device."));
         adapter.addSample(new Sample(UartActivity.class, "UART Activity", "Receive data through a UART channel from a bluetooth device."));
         adapter.addSample(new Sample(RxSensorActivity.class, "Sensors Activity", "Receive sensor data using Reactive style programming."));
+        adapter.addSample(new Sample(NodeListActivity.class, "Node Activity", "See connected Android Wear watches."));
 
         mRecycler.setAdapter(adapter);
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
