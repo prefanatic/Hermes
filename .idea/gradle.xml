@@ -13,8 +13,6 @@
             <option value="$PROJECT_DIR$/hermes-core" />
             <option value="$PROJECT_DIR$/hermes-ui" />
             <option value="$PROJECT_DIR$/hermes-wear" />
-            <option value="$PROJECT_DIR$/mobile" />
-            <option value="$PROJECT_DIR$/wear" />
           </set>
         </option>
       </GradleProjectSettings>

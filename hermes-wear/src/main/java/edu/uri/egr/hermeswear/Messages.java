@@ -20,6 +20,7 @@ import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
 
+import edu.uri.egr.hermes.Hermes;
 import edu.uri.egr.hermes.exceptions.RxGoogleApiStatusException;
 import rx.Observable;
 import rx.exceptions.OnErrorThrowable;
@@ -34,14 +35,15 @@ public class Messages {
     }
 
     public Observable<Integer> sendMessage(String nodeId, String path, byte[] payload) {
-        return Observable.defer(() -> {
-            MessageApi.SendMessageResult result = Wearable.MessageApi.sendMessage(HermesWearable.getClientBlocking(), nodeId, path, payload).await();
-            if (result.getStatus().isSuccess())
-                return Observable.just(result.getRequestId());
+        return Hermes.get().getGoogleClientObservable()
+                .map(googleApiClient -> {
+                    MessageApi.SendMessageResult result = Wearable.MessageApi.sendMessage(googleApiClient, nodeId, path, payload).await();
+                    if (result.getStatus().isSuccess())
+                        return result.getRequestId();
 
-            Timber.e("SendMessageResult is not successful: %s", result.getStatus().getStatusMessage());
-            throw OnErrorThrowable.from(new RxGoogleApiStatusException(result.getStatus()));
-        });
+                    Timber.e("SendMessageResult is not successful: %s", result.getStatus().getStatusMessage());
+                    throw OnErrorThrowable.from(new RxGoogleApiStatusException(result.getStatus()));
+                }).subscribeOn(Schedulers.io());
     }
 
     public Observable<Integer> sendMessage(String nodeId, String path) {

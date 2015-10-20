@@ -23,9 +23,11 @@ import com.google.android.gms.wearable.Wearable;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import edu.uri.egr.hermes.Hermes;
 import edu.uri.egr.hermes.exceptions.RxGoogleApiStatusException;
 import rx.Observable;
 import rx.exceptions.OnErrorThrowable;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -37,25 +39,27 @@ public class Channels {
     }
 
     public Observable<Channel> openChannel(String nodeId, String path) {
-        return Observable.defer(() -> {
-            ChannelApi.OpenChannelResult result = Wearable.ChannelApi.openChannel(HermesWearable.getClientBlocking(), nodeId, path).await();
-            if (result.getStatus().isSuccess())
-                return Observable.just(result.getChannel());
+        return Hermes.get().getGoogleClientObservable()
+                .map(googleApiClient -> {
+                    ChannelApi.OpenChannelResult result = Wearable.ChannelApi.openChannel(googleApiClient, nodeId, path).await();
+                    if (result.getStatus().isSuccess())
+                        return result.getChannel();
 
-            Timber.e("OpenChannelResult is not successful: %s", result.getStatus().getStatusMessage());
-            throw OnErrorThrowable.from(new RxGoogleApiStatusException(result.getStatus()));
-        });
+                    Timber.e("OpenChannelResult is not successful: %s", result.getStatus().getStatusMessage());
+                    throw OnErrorThrowable.from(new RxGoogleApiStatusException(result.getStatus()));
+                }).subscribeOn(Schedulers.io());
     }
 
     public Observable<InputStream> getInputStream(Channel channel) {
-        return Observable.defer(() -> {
-            Channel.GetInputStreamResult result = channel.getInputStream(HermesWearable.getClientBlocking()).await();
-            if (result.getStatus().isSuccess())
-                return Observable.just(result.getInputStream());
+        return Hermes.get().getGoogleClientObservable()
+                .map(googleApiClient -> {
+                    Channel.GetInputStreamResult result = channel.getInputStream(googleApiClient).await();
+                    if (result.getStatus().isSuccess())
+                        return result.getInputStream();
 
-            Timber.e("GetInputStreamResult is not successful: %s", result.getStatus().getStatusMessage());
-            throw OnErrorThrowable.from(new RxGoogleApiStatusException(result.getStatus()));
-        });
+                    Timber.e("GetInputStreamResult is not successful: %s", result.getStatus().getStatusMessage());
+                    throw OnErrorThrowable.from(new RxGoogleApiStatusException(result.getStatus()));
+                }).subscribeOn(Schedulers.io());
     }
 
     public Observable<InputStream> openInputStream(String nodeId, String path) {
@@ -64,14 +68,15 @@ public class Channels {
     }
 
     public Observable<OutputStream> getOutputStream(Channel channel) {
-        return Observable.defer(() -> {
-            Channel.GetOutputStreamResult result = channel.getOutputStream(HermesWearable.getClientBlocking()).await();
-            if (result.getStatus().isSuccess())
-                return Observable.just(result.getOutputStream());
+        return Hermes.get().getGoogleClientObservable()
+                .map(googleApiClient -> {
+                    Channel.GetOutputStreamResult result = channel.getOutputStream(googleApiClient).await();
+                    if (result.getStatus().isSuccess())
+                        return result.getOutputStream();
 
-            Timber.e("GetOutputStreamResult is not successful: %s", result.getStatus().getStatusMessage());
-            throw OnErrorThrowable.from(new RxGoogleApiStatusException(result.getStatus()));
-        });
+                    Timber.e("GetOutputStreamResult is not successful: %s", result.getStatus().getStatusMessage());
+                    throw OnErrorThrowable.from(new RxGoogleApiStatusException(result.getStatus()));
+                }).subscribeOn(Schedulers.io());
     }
 
     public Observable<OutputStream> openOutputStream(String nodeId, String path) {
