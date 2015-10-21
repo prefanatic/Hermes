@@ -33,6 +33,7 @@ import edu.uri.egr.hermes.exceptions.RxGoogleApiException;
 import rx.Observable;
 import rx.exceptions.OnErrorThrowable;
 import rx.subjects.BehaviorSubject;
+import rx.subjects.ReplaySubject;
 import rx.subjects.SerializedSubject;
 import rx.subjects.Subject;
 import timber.log.Timber;
@@ -47,7 +48,7 @@ public class Hermes {
     private Context context;
     private Config config;
     private volatile GoogleApiClient mGoogleApiClient;
-    private Subject<GoogleApiClient, GoogleApiClient> mGoogleSubject = new SerializedSubject<>(BehaviorSubject.create());
+    private Subject<GoogleApiClient, GoogleApiClient> mGoogleSubject = new SerializedSubject<>(ReplaySubject.create());
     private java.io.File mRootFolder;
 
     // Children Classes
@@ -145,6 +146,7 @@ public class Hermes {
 
             if (mGoogleApiClient.isConnected()) {
                 mGoogleSubject.onNext(mGoogleApiClient);
+                mGoogleSubject.onCompleted();
                 return;
             }
 
@@ -152,6 +154,7 @@ public class Hermes {
             if (result.isSuccess()) {
                 Timber.d("Connected to Google (%d ms).", System.currentTimeMillis() - startTime);
                 mGoogleSubject.onNext(mGoogleApiClient);
+                mGoogleSubject.onCompleted();
                 return;
             }
 

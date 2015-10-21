@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import edu.uri.egr.hermes.Hermes;
 import edu.uri.egr.hermes.exceptions.RxGoogleApiStatusException;
 import rx.Observable;
+import rx.Subscription;
 import rx.exceptions.OnErrorThrowable;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -39,27 +40,48 @@ public class Channels {
     }
 
     public Observable<Channel> openChannel(String nodeId, String path) {
-        return Hermes.get().getGoogleClientObservable()
-                .map(googleApiClient -> {
-                    ChannelApi.OpenChannelResult result = Wearable.ChannelApi.openChannel(googleApiClient, nodeId, path).await();
-                    if (result.getStatus().isSuccess())
-                        return result.getChannel();
+        return Observable.create(subscriber -> {
+            Subscription subscription = Hermes.get().getGoogleClientObservable()
+                    .map(googleApiClient -> {
+                        ChannelApi.OpenChannelResult result = Wearable.ChannelApi.openChannel(googleApiClient, nodeId, path).await();
+                        if (result.getStatus().isSuccess()) {
+                            subscriber.onNext(result.getChannel());
+                            subscriber.onCompleted();
 
-                    Timber.e("OpenChannelResult is not successful: %s", result.getStatus().getStatusMessage());
-                    throw OnErrorThrowable.from(new RxGoogleApiStatusException(result.getStatus()));
-                }).subscribeOn(Schedulers.io());
+                            return null;
+                        }
+
+                        Timber.e("OpenChannelResult is not successful: %s", result.getStatus().getStatusMessage());
+                        subscriber.onError(new RxGoogleApiStatusException(result.getStatus()));
+
+                        return null;
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .subscribe();
+            subscriber.add(subscription);
+        });
     }
 
     public Observable<InputStream> getInputStream(Channel channel) {
-        return Hermes.get().getGoogleClientObservable()
-                .map(googleApiClient -> {
-                    Channel.GetInputStreamResult result = channel.getInputStream(googleApiClient).await();
-                    if (result.getStatus().isSuccess())
-                        return result.getInputStream();
+        return Observable.create(subscriber -> {
+            Subscription subscription = Hermes.get().getGoogleClientObservable()
+                    .subscribeOn(Schedulers.io())
+                    .doOnUnsubscribe(() -> Timber.d("Omg"))
+                    .subscribe(googleApiClient -> {
+                        Channel.GetInputStreamResult result = channel.getInputStream(googleApiClient).await();
+                        if (result.getStatus().isSuccess()) {
+                            subscriber.onNext(result.getInputStream());
+                            subscriber.onCompleted();
+                            subscriber.unsubscribe();
 
-                    Timber.e("GetInputStreamResult is not successful: %s", result.getStatus().getStatusMessage());
-                    throw OnErrorThrowable.from(new RxGoogleApiStatusException(result.getStatus()));
-                }).subscribeOn(Schedulers.io());
+                            return;
+                        }
+
+                        Timber.e("GetInputStreamResult is not successful: %s", result.getStatus().getStatusMessage());
+                        subscriber.onError(new RxGoogleApiStatusException(result.getStatus()));
+                    });
+            subscriber.add(subscription);
+        });
     }
 
     public Observable<InputStream> openInputStream(String nodeId, String path) {
@@ -68,15 +90,26 @@ public class Channels {
     }
 
     public Observable<OutputStream> getOutputStream(Channel channel) {
-        return Hermes.get().getGoogleClientObservable()
-                .map(googleApiClient -> {
-                    Channel.GetOutputStreamResult result = channel.getOutputStream(googleApiClient).await();
-                    if (result.getStatus().isSuccess())
-                        return result.getOutputStream();
+        return Observable.create(subscriber -> {
+            Subscription subscription = Hermes.get().getGoogleClientObservable()
+                    .map(googleApiClient -> {
+                        Channel.GetOutputStreamResult result = channel.getOutputStream(googleApiClient).await();
+                        if (result.getStatus().isSuccess()) {
+                            subscriber.onNext(result.getOutputStream());
+                            subscriber.onCompleted();
 
-                    Timber.e("GetOutputStreamResult is not successful: %s", result.getStatus().getStatusMessage());
-                    throw OnErrorThrowable.from(new RxGoogleApiStatusException(result.getStatus()));
-                }).subscribeOn(Schedulers.io());
+                            return null;
+                        }
+
+                        Timber.e("GetOutputStreamResult is not successful: %s", result.getStatus().getStatusMessage());
+                        subscriber.onError(new RxGoogleApiStatusException(result.getStatus()));
+
+                        return null;
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .subscribe();
+            subscriber.add(subscription);
+        });
     }
 
     public Observable<OutputStream> openOutputStream(String nodeId, String path) {
