@@ -66,7 +66,7 @@ public class Channels {
         return Observable.create(subscriber -> {
             Subscription subscription = Hermes.get().getGoogleClientObservable()
                     .subscribeOn(Schedulers.io())
-                    .doOnUnsubscribe(() -> Timber.d("Omg"))
+                    .doOnUnsubscribe(subscriber::unsubscribe)
                     .subscribe(googleApiClient -> {
                         Channel.GetInputStreamResult result = channel.getInputStream(googleApiClient).await();
                         if (result.getStatus().isSuccess()) {

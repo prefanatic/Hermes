@@ -76,8 +76,4 @@ public class Dispatch {
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread());
     }
-
-    public <T> Observable<T> createReceiver(String key) {
-        return null;
-    }
 }
