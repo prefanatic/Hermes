@@ -48,6 +48,7 @@ public class Hermes {
     private Context context;
     private Config config;
     private volatile GoogleApiClient mGoogleApiClient;
+    private SerializedSubject<GoogleApiClient, GoogleApiClient> mGoogleApiSubject = new SerializedSubject<>(ReplaySubject.create());
     private java.io.File mRootFolder;
 
     // Children Classes
@@ -64,8 +65,7 @@ public class Hermes {
             Timber.plant(new Timber.DebugTree());
 
         // Connect to Google.
-        getGoogleClient()
-                .subscribe();
+        createGoogleClient();
 
         mRootFolder = config.baseFolder;
         if (mRootFolder == null)
@@ -101,6 +101,12 @@ public class Hermes {
         return mRootFolder;
     }
 
+    public void setRootFolder(java.io.File folder) {
+        mRootFolder = folder;
+
+        mRootFolder.mkdirs();
+    }
+
     public void exception(Exception e) {
         if (config.exceptionCallback != null)
             config.exceptionCallback.onException(e);
@@ -119,20 +125,19 @@ public class Hermes {
         return mGoogleApiClient;
     }
 
-    @Deprecated
     public Observable<GoogleApiClient> getGoogleClientObservable() {
-        return getGoogleClient();
+        return mGoogleApiSubject.asObservable();
     }
 
-    public Observable<GoogleApiClient> getGoogleClient() {
-        return Observable.create(subscriber -> {
+    private void createGoogleClient() {
+        new Thread(() -> {
             long startTime = System.currentTimeMillis();
 
             if (config.apis.size() == 0) {
-                subscriber.onError(new HermesException("No API requested for GoogleApiClient."));
+                mGoogleApiSubject.onError(new HermesException("No API requested for GoogleApiClient."));
                 return;
             } else if (context == null) {
-                subscriber.onError(new HermesException("Hermes has not been initialized yet."));
+                mGoogleApiSubject.onError(new HermesException("Hermes has not been initialized yet."));
                 return;
             }
 
@@ -144,8 +149,8 @@ public class Hermes {
 
                 mGoogleApiClient = builder.build();
             } else if (mGoogleApiClient.isConnected()) {
-                subscriber.onNext(mGoogleApiClient);
-                subscriber.onCompleted();
+                mGoogleApiSubject.onNext(mGoogleApiClient);
+                mGoogleApiSubject.onCompleted();
 
                 return;
             }
@@ -153,17 +158,15 @@ public class Hermes {
             ConnectionResult result = mGoogleApiClient.blockingConnect();
             if (result.isSuccess()) {
                 Timber.d("Connected to Google (%d ms).", System.currentTimeMillis() - startTime);
-                subscriber.onNext(mGoogleApiClient);
-                subscriber.onCompleted();
+                mGoogleApiSubject.onNext(mGoogleApiClient);
+                mGoogleApiSubject.onCompleted();
 
                 return;
             }
 
             Timber.e("GoogleApiClient error: %d", result.getErrorCode());
-            subscriber.onError(new RxGoogleApiException(result));
-
-        }).subscribeOn(Schedulers.io())
-                .cast(GoogleApiClient.class);
+            mGoogleApiSubject.onError(new RxGoogleApiException(result));
+        }).start();
     }
 
     public static final class Config {
