@@ -36,11 +36,14 @@ In your build.gradle:
 ```groovy
 repositories {
     jcenter()
+    maven {
+            url "https://dl.bintray.com/prefanatic/maven/"
+        }
 }
 
-compile 'com.github.prefanatic.hermes:hermes-core:0.3.0'
-compile 'com.github.prefanatic.hermes:hermes-ble:0.3.0'
-compile 'com.github.prefanatic.hermes:hermes-wear:0.3.0'
+compile 'com.github.prefanatic.hermes:hermes-core:0.3.5'
+compile 'com.github.prefanatic.hermes:hermes-ble:0.3.5'
+compile 'com.github.prefanatic.hermes:hermes-wear:0.3.5'
 ```
 
 You need not install all modules.  If you're only looking for BLE support, install hermes-ble -> applies to all.
