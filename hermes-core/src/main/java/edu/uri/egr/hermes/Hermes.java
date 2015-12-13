@@ -31,11 +31,8 @@ import edu.uri.egr.hermes.callbacks.HermesExceptionCallback;
 import edu.uri.egr.hermes.exceptions.HermesException;
 import edu.uri.egr.hermes.exceptions.RxGoogleApiException;
 import rx.Observable;
-import rx.exceptions.OnErrorThrowable;
-import rx.schedulers.Schedulers;
 import rx.subjects.ReplaySubject;
 import rx.subjects.SerializedSubject;
-import rx.subjects.Subject;
 import timber.log.Timber;
 
 public class Hermes {
@@ -55,6 +52,7 @@ public class Hermes {
     public static final File File = new File();
     public static final Dispatch Dispatch = new Dispatch();
     public static final Sensor Sensor = new Sensor();
+    public static final Bus Bus = new Bus();
 
     private Hermes(Context context, Config config) {
         this.context = context;
@@ -170,10 +168,10 @@ public class Hermes {
     }
 
     public static final class Config {
-        public List<Api> apis = new ArrayList<>();
-        public java.io.File baseFolder;
-        public HermesExceptionCallback exceptionCallback;
-        public boolean debug;
+        protected List<Api> apis = new ArrayList<>();
+        protected java.io.File baseFolder;
+        protected HermesExceptionCallback exceptionCallback;
+        protected boolean debug;
 
         public Config addApi(Api api) {
             apis.add(api);

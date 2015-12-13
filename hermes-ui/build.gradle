@@ -47,7 +47,7 @@ dependencies {
     compile "com.android.support:recyclerview-v7:$project.appCompat"
     compile "com.android.support:design:$project.appCompat"
 
-    compile 'com.jakewharton.rxbinding:rxbinding:0.2.0'
+    compile "com.jakewharton.rxbinding:rxbinding:$project.rxBinding"
 
     compile 'com.jakewharton:butterknife:7.0.1'
 

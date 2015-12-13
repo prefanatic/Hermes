@@ -15,6 +15,15 @@
             <option value="$PROJECT_DIR$/hermes-wear" />
           </set>
         </option>
+        <option name="myModules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/hermes-ble" />
+            <option value="$PROJECT_DIR$/hermes-core" />
+            <option value="$PROJECT_DIR$/hermes-ui" />
+            <option value="$PROJECT_DIR$/hermes-wear" />
+          </set>
+        </option>
       </GradleProjectSettings>
     </option>
   </component>
