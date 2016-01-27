@@ -126,6 +126,10 @@ public class FileLog {
         return String.valueOf(batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1 / batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1) * 100));
     }
 
+    public File getFile() {
+        return file;
+    }
+
     private void generateFile() {
         if (!file.exists()) {
             writeHeaders();
